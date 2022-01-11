@@ -1,5 +1,19 @@
+//===----------------------------------------------------------------------===//
+//                         compass
+//
+// upload.js
+//
+// Identification: src/sheet/upload.js
+//
+// Last Modified : 2022.1.12 Jiawei Wang
+//
+// Copyright (c) 2022 Angold-4
+//
+//===----------------------------------------------------------------------===//
+
 const {google} = require('googleapis');
 const keys = require('./creds.json')
+var fs = require('fs')
 
 const client = new google.auth.JWT(
     keys.client_email, 
@@ -20,30 +34,18 @@ client.authorize(function(err, tokens){ // call back function
 async function gsrun(cl) {
     const gsapi = google.sheets({version:'v4', auth:cl});
 
-    const opt = {
+    // TODO Define dataArray
+
+    const inputopt = {
 	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
 	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'example!C2:D5'
+	range: 'Data!L2',
+	valueInputOption: 'USER_ENTERED',
+	resource: {values: dataArray}
     };
 
-    let data = await gsapi.spreadsheets.values.get(opt);
-    let dataArray = data.data.values;
-    // console.log(dataArray);
-    dataArray.map(function(r) {
-
-    });
+    let res = await gsapi.spreadsheets.values.update(inputopt);
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
