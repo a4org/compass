@@ -17,6 +17,8 @@
 #include <vector>
 #include <fstream>
 #include <stdio.h>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <iostream>
 #include <unordered_map>
@@ -25,6 +27,8 @@
 #include <thread>
 #include <filesystem>
 
+#define BOND  "https://www.bondsupermart.com/bsm/bond-factsheet/"
+#define YAHOO "https://finance.yahoo.com/quote/"
 
 // CurlObj is the class to handle url
 class CurlObj {
@@ -91,6 +95,13 @@ public:
      */
     int option();
 
+
+    // Testing function, whatever wange needed
+    /*
+    std::string testwrapper() {
+	return this->getStockBlk(this->phtml);
+    }
+    */
 private:
     std::string phtml;
 
