@@ -56,8 +56,8 @@ int main() {
     std::string testNDX = "https://finance.yahoo.com/quote/NDX220414P15500000";
 
     // Bond
-    std::string testAGB = "https://www.bondsupermart.com/bsm/bond-factsheet/AU3TB0000143";
-    std::string testCGB = "https://www.bondsupermart.com/bsm/bond-factsheet/HK0000317724";
+    std::string testAGB = "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/AU3TB0000143";
+    std::string testCGB = "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/HK0000317724";
 
 
     std::vector<std::string> testall = {testIBM, testAMZ, testUGI, testNDX, testAGB, testCGB};
