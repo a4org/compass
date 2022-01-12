@@ -29,6 +29,9 @@
 
 #define BOND  "https://www.bondsupermart.com/bsm/bond-factsheet/"
 #define YAHOO "https://finance.yahoo.com/quote/"
+#define VPSS std::vector<std::pair<std::string, std::string>>
+#define VPIS std::vector<std::pair<int, std::string>>
+#define VS std::vector<std::string>
 
 // CurlObj is the class to handle url
 class CurlObj {
@@ -71,9 +74,9 @@ public:
      * Parser::stock()
      * 
      * Parse all stock-related value from yahoo finance html
-     * currency, code, O, H, L, C, Volume and print them with \n
+     * currency, code, O, H, L, C, Volume
      */
-    int stock();
+    VS stock();
 
     /**
      * Parser::bond()
@@ -81,9 +84,8 @@ public:
      * Parse all bond-related value from bond supermarket html
      *
      * currency, name, Bid, Ask, Coupon, Maturity, Raiting, YTM, Seniority, Type
-     * and print them with \n
      */
-    int bond();
+    VS bond();
 
     /**
      * Parser::option() 
@@ -91,9 +93,8 @@ public:
      * Parse all option-related value from yahoo finance html
      *
      * currency, code, O, H, L, C, Strike, Ex Date, Put/Call, Open interest
-     * and print them with \n
      */
-    int option();
+    VS option();
 
 
     // Testing function, whatever wange needed
