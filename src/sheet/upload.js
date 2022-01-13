@@ -36,15 +36,31 @@ async function gsrun(cl) {
 
     // TODO Define dataArray
 
-    const inputopt = {
-	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
-	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Data!L2',
-	valueInputOption: 'USER_ENTERED',
-	resource: {values: dataArray}
-    };
+    fs.readFile('../test.csv', "utf8", (error, data) => {
+	if (error) {
+	    throw error;
+	}
+	console.log(data.toString());
 
-    let res = await gsapi.spreadsheets.values.update(inputopt);
+	var lines = data.split("\n");
+	var dataArray = [];
+	for (var i = 0; i < lines.length; i++) {
+	    var words = lines[i].split(",");
+	    dataArray.push(words);
+	}
+
+	console.log(dataArray);
+
+	const inputopt = {
+	    spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
+	    // spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+	    range: 'Data!L2',
+	    valueInputOption: 'USER_ENTERED',
+	    resource: {values: dataArray}
+	};
+
+	gsapi.spreadsheets.values.update(inputopt);
+    });
 }
 
 

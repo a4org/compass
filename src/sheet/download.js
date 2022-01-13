@@ -42,7 +42,7 @@ async function gsrun(cl) {
 
     let data = await gsapi.spreadsheets.values.get(opt);
     let dataArray = data.data.values;
-    // console.log(dataArray);
+    console.log(dataArray);
 
     const inputopt = {
 	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
