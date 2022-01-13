@@ -17,6 +17,17 @@
 
 std::unordered_map<int, VS> final; // multithreading TODO
 
+std::pair<int, int> Parser::gparse(std::string sblk, std::string key) {
+    int start = sblk.find(key);
+    start = sblk.find('>', start);
+    start += 1;
+    int end = sblk.find('<', start);
+    if ( start == std::string::npos || end == std::string::npos || end < start) {
+	std::cerr << "Searching key error, on gparse stock" << std::endl;
+	return std::make_pair(-1, -1);
+    }
+    return std::make_pair(start, end);
+}
 
 // currency, code, O, H, L, C, Volume
 VS Parser::stock() {
@@ -43,15 +54,9 @@ VS Parser::stock() {
 
     // 2.1 Open price
     std::string openkey = "OPEN-value";
-    int openstart = blk.find(openkey);
-    openstart = blk.find('>', openstart);
-    openstart += 1;
-    int openend = blk.find('<', openstart);
-    if ( openstart == std::string::npos || openend == std::string::npos || openend < openstart) {
-	std::cerr << "Searching key error, on parse stock Open price" << std::endl;
-	return {};
-    }
-    O = blk.substr(openstart, openend - openstart);
+    std::pair<int, int> op = this->gparse(blk, openkey);
+    if (op.first == -1) return {};
+    O = blk.substr(op.first, op.second-op.first);
 
     // Just for debugging
     std::cout << "Open: " << O << std::endl; 
@@ -59,15 +64,8 @@ VS Parser::stock() {
 
     // 2.2 High and Low price 
     std::string hlkey = "DAYS_RANGE-value";
-    int hlstart = blk.find(hlkey);
-    hlstart = blk.find('>', hlstart);
-    hlstart += 1;
-    int hlend = blk.find('<', hlstart);
-    if ( hlstart == std::string::npos || hlend == std::string::npos || hlend < hlstart) {
-	std::cerr << "Searching key error, on parse stock High and Low price" << std::endl;
-	return {};
-    }
-    std::string HL = blk.substr(hlstart, hlend - hlstart);
+    std::pair<int, int> hlp = this->gparse(blk, hlkey);
+    std::string HL = blk.substr(hlp.first, hlp.second - hlp.first);
 
     // Just for debugging
     // std::cout << "High and Low block: " << HL << std::endl; 
@@ -84,22 +82,33 @@ VS Parser::stock() {
 
     // 2.3 Close price
     std::string closekey = "PREV_CLOSE-value";
-    int closestart = blk.find(closekey);
-    closestart = blk.find('>', closestart);
-    closestart += 1;
-    int closeend = blk.find('<', closestart);
-    if ( closestart == std::string::npos || closeend == std::string::npos || closeend < closestart) {
-	std::cerr << "Searching key error, on parse stock Close price" << std::endl;
-	return {};
-    }
-    C = blk.substr(closestart, closeend - closestart);
+    std::pair<int, int> cp = this->gparse(blk, closekey);
+
+    C = blk.substr(cp.first, cp.second - cp.first);
 
     // Just for debugging
     std::cout << "Close: " << C << std::endl;
 
-    // 2.4 Volume
+    // 2.4 Volume 
+    std::string volumekey = "TD_VOLUME-value";
+    // Volume changing everytime, so make sure I can fetch it 
+    // More generic way
 
-    return {};
+    int volumestart = blk.find(volumekey);
+    volumestart = blk.find("value=", volumestart);
+    volumestart += 7;
+    int volumeend = blk.find("\"", volumestart);
+
+    Volume = blk.substr(volumestart, volumeend - volumestart);
+
+    for (auto it = Volume.begin(); it < Volume.end(); it++) {
+	if (*it == ',') Volume.erase(it);
+    }
+    std::cout << "Volume: " << Volume << std::endl; 
+
+    VS ret = {currency, O, H, L, C, Volume};
+
+    return ret;
 }
 
 
@@ -206,8 +215,18 @@ int main() {
     // 4. Parse html
     
     Parser* parser = new Parser(html);
-    parser->stock();
+    VS datafield = parser->stock();
     // std::string subhtml = parser->testwrapper();
+
+
+    // 5. Write to csv file
+
+    std::ofstream testcsv;
+    testcsv.open("../coutput.csv");
+    for (std::string s : datafield) {
+	testcsv << s << ',';
+    }
+    testcsv.close();
 
     /* // for debugging
     std::ofstream out("test.html");

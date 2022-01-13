@@ -129,5 +129,13 @@ private:
      * Ease of handling later
      */
     std::string getOptionBlk(std::string shtml);
+
+    /**
+     * Parser::gparse
+     *
+     * Generitic parse function for Yahoo finance
+     * return start and end point of the specific key
+     */
+    std::pair<int, int> gparse(std::string sblk, std::string key);
 };
 
