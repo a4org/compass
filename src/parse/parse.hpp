@@ -107,20 +107,13 @@ private:
     std::string phtml;
 
     /**
-     * Parser::getStockBlk()
+     * Parser::getYahooBlk()
      *
-     * get the stock-related data block from stock html 
+     * get the data block from stock html (yahoo)
      * Ease of handling later
      */
-    std::string getStockBlk(std::string shtml);
+    std::string getYahooBlk(std::string shtml);
 
-    /**
-     * Parser::getBondBlk()
-     *
-     * get the bond-related data block from stock html 
-     * Ease of handling later
-     */
-    std::string getBondBlk(std::string shtml);
 
     /**
      * Parser::getOptionBlk()

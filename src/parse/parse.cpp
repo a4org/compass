@@ -29,8 +29,10 @@ std::pair<int, int> Parser::gparse(std::string sblk, std::string key) {
     return std::make_pair(start, end);
 }
 
-// currency, code, O, H, L, C, Volume
+// currency, O, H, L, C, Volume
 VS Parser::stock() {
+    std::string Currency, O, H, L, C, Volume;
+
     // 0. Get Currency
     std::string currencykey = "Currency in ";
     int currencystart = this->phtml.find(currencykey);
@@ -41,16 +43,13 @@ VS Parser::stock() {
     }
 
     currencystart += 12;
-    std::string currency = this->phtml.substr(currencystart, currencyend-currencystart);
-    // std::cout << currency << std::endl;
+    Currency = this->phtml.substr(currencystart, currencyend-currencystart);
+    // std::cout << Currency << std::endl;
 
     // 1. Get block
-    std::string blk = this->getStockBlk(this->phtml);
+    std::string blk = this->getYahooBlk(this->phtml);
 
     // 2. Get each data
-    std::string O, H, L, C, Volume;
-
-    // TODO: Rewrite parse logic, make a more generic function
 
     // 2.1 Open price
     std::string openkey = "OPEN-value";
@@ -71,9 +70,9 @@ VS Parser::stock() {
     // std::cout << "High and Low block: " << HL << std::endl; 
 
     int Hend = HL.find('-');
-    H = HL.substr(0, Hend-1);
+    L = HL.substr(0, Hend-1);
     Hend += 2;
-    L = HL.substr(Hend, HL.size()-Hend);
+    H = HL.substr(Hend, HL.size()-Hend);
 
     // Just for debugging
     std::cout << "High: " << H << std::endl;
@@ -106,13 +105,118 @@ VS Parser::stock() {
     }
     std::cout << "Volume: " << Volume << std::endl; 
 
-    VS ret = {currency, O, H, L, C, Volume};
+    VS ret = {Currency, O, H, L, C, Volume};
 
     return ret;
 }
 
+// currency, O, H, L, C, Strike, Ex Date, Put/Call,  Open interest
+VS Parser::option() {
+    std::string Currency, O, H, L, C, Strike, ExDate, PutCall, Interest;
 
-std::string Parser::getStockBlk(std::string shtml) {
+    // 0.1 Get Currency
+    std::string currencykey = "Currency in ";
+    int currencystart = this->phtml.find(currencykey);
+    int currencyend   = this->phtml.find("</s", currencystart);
+    if (currencystart == std::string::npos || currencyend == std::string::npos || currencyend < currencystart) {
+	std::cerr << "Searching key error, on parse option" << std::endl;
+	return {};
+    }
+
+    currencystart += 12;
+    Currency = this->phtml.substr(currencystart, currencyend-currencystart);
+    std::cout << "Currency: " << Currency << std::endl;
+
+    // 0.2 Get Put / Call
+    std::string pckey = "</h1></div>";
+    int pcend = this->phtml.find(pckey);
+    int pcstart = this->phtml.rfind(' ', pcend)+1; 
+    if (pcstart == std::string::npos || pcend == std::string::npos || pcend < pcstart) {
+	std::cout << "pcstart: " << pcstart << std::endl;
+	std::cout << "pcend: " << pcend << std::endl;
+	std::cerr << "Searching key error, on parse option" << std::endl;
+	return {};
+    }
+    PutCall = this->phtml.substr(pcstart, pcend-pcstart);
+    if (PutCall != "put" && PutCall != "call") {
+	std::cout << PutCall << std::endl;
+	std::cerr << "Searching key error, on parse put/call" << std::endl;
+	return {};
+    }
+
+    std::cout << "Put or Call: " << PutCall << std::endl;
+
+    // 1. Get block
+    std::string blk = this->getYahooBlk(this->phtml);
+
+    // 2. Get each data
+
+    // 2.1 Open price
+    std::string openkey = "OPEN-value";
+    std::pair<int, int> op = this->gparse(blk, openkey);
+    if (op.first == -1) return {};
+    O = blk.substr(op.first, op.second-op.first);
+
+    // Just for debugging
+    std::cout << "Open: " << O << std::endl; 
+
+
+    // 2.2 High and Low price 
+    std::string hlkey = "DAYS_RANGE-value";
+    std::pair<int, int> hlp = this->gparse(blk, hlkey);
+    std::string HL = blk.substr(hlp.first, hlp.second - hlp.first);
+
+    // Just for debugging
+    // std::cout << "High and Low block: " << HL << std::endl; 
+
+    int Hend = HL.find('-');
+    L = HL.substr(0, Hend-1);
+    Hend += 2;
+    H = HL.substr(Hend, HL.size()-Hend);
+
+    // Just for debugging
+    std::cout << "High: " << H << std::endl;
+    std::cout << "Low: " << L << std::endl;
+
+
+    // 2.3 Close price
+    std::string closekey = "PREV_CLOSE-value";
+    std::pair<int, int> cp = this->gparse(blk, closekey);
+
+    C = blk.substr(cp.first, cp.second - cp.first);
+
+    // Just for debugging
+    std::cout << "Close: " << C << std::endl;
+
+    // 2.4 Strike
+    std::string strikekey = "STRIKE-value";
+    std::pair<int, int> strikep = this->gparse(blk, strikekey);
+    
+    Strike = blk.substr(strikep.first, strikep.second - strikep.first);
+
+    std::cout << "Strike: " << Strike << std::endl;
+
+    // 2.5 Expire date
+    std::string exkey = "EXPIRE_DATE-value";
+    std::pair<int, int> ExDatep = this->gparse(blk, exkey);
+    
+    ExDate = blk.substr(ExDatep.first, ExDatep.second-ExDatep.first);
+
+    std::cout << "ExDate: " << ExDate << std::endl;
+
+    // 2.6 Open Interest
+    std::string interestkey = "OPEN_INTEREST-value";
+    std::pair<int, int> Interestp = this->gparse(blk, interestkey);
+
+    Interest = blk.substr(Interestp.first, Interestp.second-Interestp.first);
+
+    std::cout << "Open Interest: " << Interest << std::endl;
+
+    return {};
+}
+
+
+std::string Parser::getYahooBlk(std::string shtml) {
     std::string begblk = "Previous Close</span>";
     std::string endblk = "</tbody></table></div></div></div></div></div>";
     int begidx = shtml.find(begblk);
@@ -126,7 +230,7 @@ std::string Parser::getStockBlk(std::string shtml) {
     std::ofstream out("test.html");
     out << blk;
     out.close();
-    return shtml.substr(begidx, endidx-begidx); // 5114 chars
+    return shtml.substr(begidx, endidx-begidx); // 5114, 3214 chars
 };
 
 
@@ -198,8 +302,8 @@ int main() {
     }
     */
 
-    std::string testcode = "IBM";
-    std::string testtype = "Stock";
+    std::string testcode = "APA220414P00027500";
+    std::string testtype = "Option";
     std::string url = YAHOO + testcode;
 
     // 3. Fetch html
@@ -215,7 +319,7 @@ int main() {
     // 4. Parse html
     
     Parser* parser = new Parser(html);
-    VS datafield = parser->stock();
+    VS datafield = parser->option();
     // std::string subhtml = parser->testwrapper();
 
 
