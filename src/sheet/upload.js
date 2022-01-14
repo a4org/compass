@@ -36,7 +36,7 @@ async function gsrun(cl) {
 
     // TODO Define dataArray
 
-    fs.readFile('../test.csv', "utf8", (error, data) => {
+    fs.readFile('coutput.csv', "utf8", (error, data) => {
 	if (error) {
 	    throw error;
 	}
@@ -54,7 +54,7 @@ async function gsrun(cl) {
 	const inputopt = {
 	    spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
 	    // spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	    range: 'Data!L2',
+	    range: 'Data!E9',
 	    valueInputOption: 'USER_ENTERED',
 	    resource: {values: dataArray}
 	};
