@@ -35,11 +35,8 @@ std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
 
 // currency, name, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type
 VS Parser::bond() {
-    if (this->phtml == "") {
-	VS invalidret = {};
-	for (int i = 0; i < 10; i++) {
-	    invalidret.push_back("Invalid");
-	}
+    if (this->phtml.size() < 1000) { // invalid html
+	VS invalidret = {"invalid"};
 	return invalidret;
     }
     std::string Currency, IssuerName, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type;
@@ -158,11 +155,8 @@ std::pair<int, int> Parser::gparse(std::string sblk, std::string key) {
 
 // currency, O, H, L, C, Volume
 VS Parser::stock() {
-    if (this->phtml == "") {
-	VS invalidret = {};
-	for (int i = 0; i < 6; i++) {
-	    invalidret.push_back("Invalid");
-	}
+    if (this->phtml.size() < 100) {
+	VS invalidret = {"invalid"};
 	return invalidret;
     }
     std::string Currency, O, H, L, C, Volume;
@@ -251,11 +245,8 @@ VS Parser::stock() {
 
 // currency, O, H, L, C, Strike, Ex Date, Put/Call,  Open interest
 VS Parser::option() {
-    if (this->phtml == "") {
-	VS invalidret = {};
-	for (int i = 0; i < 9; i++) {
-	    invalidret.push_back("Invalid");
-	}
+    if (this->phtml.size() < 100) {
+	VS invalidret = {"invalid"};
 	return invalidret;
     }
     std::string Currency, O, H, L, C, Strike, ExDate, PutCall, Interest;
@@ -419,7 +410,7 @@ int readcsv(std::string cpath, VPSS& codetype) {
 int main() {
     // 1. Read csv file from download.js (sheet)
     VPSS codetype; // code with its type
-    readcsv("../sheet.csv", codetype);
+    readcsv("sheet.csv", codetype);
     /*// for debugging
     for (auto p : codetype) {
 	std::cout << p.first << " " << p.second << std::endl;
@@ -491,7 +482,7 @@ int main() {
 	    datafield = parser->option();
 	    // last
 	    VS stockbondfield = {" ", " ", " ", " ", " ", " ", " ", " ", " ", 
-		" ", " ", " ", " ", " ", " ", " ", " "};
+		" ", " ", " ", " ", " ", " ", " "};
 	    for (std::string data : datafield) {
 		stockbondfield.push_back(data);
 	    }
@@ -499,7 +490,7 @@ int main() {
 
 	} else if (type == "Bond") {
 	    datafield = parser->bond();
-	    VS stockfield = {" ", " ", " ", " ", " ", " ", " ", " "};
+	    VS stockfield = {" ", " ", " ", " ", " ", " "};
 	    for (std::string data : datafield) {
 		stockfield.push_back(data);
 	    }
@@ -514,7 +505,7 @@ int main() {
 
 	// 5. Write to file (testonly)
 	std::ofstream testcsv;
-	testcsv.open("../coutput.csv");
+	testcsv.open("coutput.csv"); // test current dir
 
 	for (VS datafield : datafields) {
 	    for (std::string s : datafield) {
