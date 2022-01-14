@@ -29,6 +29,7 @@
 
 #define BOND  "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/"
 #define YAHOO "https://finance.yahoo.com/quote/"
+#define VVS  std::vector<std::vector<std::string>> 
 #define VPSS std::vector<std::pair<std::string, std::string>>
 #define VPIS std::vector<std::pair<int, std::string>>
 #define VS std::vector<std::string>

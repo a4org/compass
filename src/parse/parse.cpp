@@ -1,5 +1,4 @@
-//===----------------------------------------------------------------------===//
-//                         compass
+//===----------------------------------------------------------------------===// compass
 //
 // parse.cpp
 //
@@ -16,6 +15,7 @@
 
 
 std::unordered_map<int, VS> final; // multithreading TODO
+VVS datafields; // final write-to-csv data
 
 
 std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
@@ -35,6 +35,13 @@ std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
 
 // currency, name, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type
 VS Parser::bond() {
+    if (this->phtml == "") {
+	VS invalidret = {};
+	for (int i = 0; i < 10; i++) {
+	    invalidret.push_back("Invalid");
+	}
+	return invalidret;
+    }
     std::string Currency, IssuerName, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type;
 
     // Currency : bondCurrencyCode
@@ -129,6 +136,11 @@ VS Parser::bond() {
 
     // currency, name, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type
     VS ret = {Currency, IssuerName, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type};
+    for (std::string& s : ret) {
+	for (auto it = s.begin(); it < s.end(); it++) {
+	    if (*it == ',') s.erase(it);
+	}
+    }
     return ret;
 }
 
@@ -146,6 +158,13 @@ std::pair<int, int> Parser::gparse(std::string sblk, std::string key) {
 
 // currency, O, H, L, C, Volume
 VS Parser::stock() {
+    if (this->phtml == "") {
+	VS invalidret = {};
+	for (int i = 0; i < 6; i++) {
+	    invalidret.push_back("Invalid");
+	}
+	return invalidret;
+    }
     std::string Currency, O, H, L, C, Volume;
 
     // 0. Get Currency
@@ -221,12 +240,24 @@ VS Parser::stock() {
     std::cout << "Volume: " << Volume << std::endl; 
 
     VS ret = {Currency, O, H, L, C, Volume};
-
+    // filter ret value avoid xxx,xxx
+    for (std::string& s : ret) {
+	for (auto it = s.begin(); it < s.end(); it++) {
+	    if (*it == ',') s.erase(it);
+	}
+    }
     return ret;
 }
 
 // currency, O, H, L, C, Strike, Ex Date, Put/Call,  Open interest
 VS Parser::option() {
+    if (this->phtml == "") {
+	VS invalidret = {};
+	for (int i = 0; i < 9; i++) {
+	    invalidret.push_back("Invalid");
+	}
+	return invalidret;
+    }
     std::string Currency, O, H, L, C, Strike, ExDate, PutCall, Interest;
 
     // 0.1 Get Currency
@@ -327,7 +358,13 @@ VS Parser::option() {
 
     std::cout << "Open Interest: " << Interest << std::endl;
 
-    return {};
+    VS ret = {Currency, O, H, L, C, Strike, ExDate, PutCall, Interest};
+    for (std::string& s : ret) {
+	for (auto it = s.begin(); it < s.end(); it++) {
+	    if (*it == ',') s.erase(it);
+	}
+    }
+    return ret;
 }
 
 
@@ -389,7 +426,6 @@ int main() {
     }
     */
 
-
     // 2. Concatenate urls
     // {{1, url}, {2, url}} for multithreading TODO 
 
@@ -399,17 +435,95 @@ int main() {
 	std::string code = ct.first;
 	std::string type = ct.second;
 
+
 	std::string url = "";
 
-	if (type == "Stock" || "Option") url = YAHOO + code;
+	if (type == "Stock" || type == "Option") url = YAHOO + code;
 	else if (type == "Bond") url = BOND + code;
 	else {
-	    std::cerr << "invalid type!" << std::endl;
-	    return 1;
+	    // do not alert
+	    url = "";
 	}
 	
-	indexurl.push_back(std::make_pair(i, url));
+	indexurl.push_back(std::make_pair(i, type+','+url)); 
     }
+
+    // 3. For each url, Create its CurlObj and Parser
+    // TODO: add multithreading
+
+    for (auto pis : indexurl) {
+	// for each url, in this step, we do not care whether it is valid or not
+	// (actually, we cannot do that now) just check when push back to datafields
+	
+	VS datafield = {}; // store this data (S/O/B)
+
+	// 1. Parse this "url", get url and type
+	
+	std::string url = pis.second;
+	std::cout << url << std::endl;
+	std::string type = "";
+	for (auto it = url.begin(); it < url.end(); it++) {
+	    if (*it == ',') {
+		url.erase(url.begin(), it+1);
+		break;
+	    }
+	    type.push_back(*it);
+	}
+
+
+	// 2. Get html data
+	
+	CurlObj* co = new CurlObj(url);
+	std::string html = co->getData();
+	if (html == "") { // invalid
+	    datafield.push_back("Invalid");
+	    datafields.push_back(datafield);
+	    continue;
+	}
+
+
+	// 3. Create parser and parse data
+	
+	Parser* parser = new Parser(html); // Create its own parser
+	if (type == "Stock") {
+	    datafield = parser->stock();
+	} else if (type == "Option") {
+	    datafield = parser->option();
+	    // last
+	    VS stockbondfield = {" ", " ", " ", " ", " ", " ", " ", " ", " ", 
+		" ", " ", " ", " ", " ", " ", " ", " "};
+	    for (std::string data : datafield) {
+		stockbondfield.push_back(data);
+	    }
+	    datafield = stockbondfield;
+
+	} else if (type == "Bond") {
+	    datafield = parser->bond();
+	    VS stockfield = {" ", " ", " ", " ", " ", " ", " ", " "};
+	    for (std::string data : datafield) {
+		stockfield.push_back(data);
+	    }
+	    datafield = stockfield;
+	} else {
+	    // cannot reach here
+	    std::cerr << "Unexpected error, on creating parser with type" << std::endl;
+	}
+
+	// 4. Push valid data into datafields
+	datafields.push_back(datafield);
+
+	// 5. Write to file (testonly)
+	std::ofstream testcsv;
+	testcsv.open("../coutput.csv");
+
+	for (VS datafield : datafields) {
+	    for (std::string s : datafield) {
+		testcsv << s << ',';
+	    }
+	    testcsv << '\n';
+	}
+    }
+
 
     /*// for debugging
     for (auto p : indexurl) {
@@ -417,9 +531,11 @@ int main() {
     }
     */
 
-    std::string testcode = "AU3TB0000143";
-    std::string testtype = "Bond";
-    std::string url = BOND + testcode;
+    /*
+
+    std::string testcode = "HSBC";
+    std::string testtype = "Stock";
+    std::string url = YAHOO + testcode;
 
     // 3. Fetch html
 
@@ -434,7 +550,7 @@ int main() {
     // 4. Parse html
     
     Parser* parser = new Parser(html);
-    VS datafield = parser->bond();
+    VS datafield = parser->stock();
     // std::string subhtml = parser->testwrapper();
 
 
@@ -442,15 +558,17 @@ int main() {
 
     std::ofstream testcsv;
     testcsv.open("../coutput.csv");
-    for (std::string s : datafield) {
-	testcsv << s << ',';
+
+    for (VS datafield : datafields) {
+	for (std::string s : datafield) {
+	    testcsv << s << ',';
+	}
     }
-    testcsv.close();
+    */
 
     /* // for debugging
     std::ofstream out("test.html");
     out << subhtml;
     out.close();
     */
-
 }
