@@ -1,9 +1,9 @@
 //===----------------------------------------------------------------------===//
 //                         compass
 //
-// upload.js
+// download.js
 //
-// Identification: src/sheet/upload.js
+// Identification: src/sheet/download.js
 //
 // Last Modified : 2022.1.12 Jiawei Wang
 //
@@ -37,24 +37,13 @@ async function gsrun(cl) {
     const opt = {
 	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
 	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Data!C2:D10',
+	range: 'Data!C9:D20',
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
     let dataArray = data.data.values;
     console.log(dataArray);
 
-    const inputopt = {
-	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
-	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Data!L2',
-	valueInputOption: 'USER_ENTERED',
-	resource: {values: dataArray}
-    };
-
-    let res = await gsapi.spreadsheets.values.update(inputopt);
-
-    console.log(res);
 
     var csv = dataArray.map(function(d){
 	return d.join();
@@ -62,7 +51,7 @@ async function gsrun(cl) {
 
     // console.log(csv);
 
-    fs.writeFile('./sheet.csv', csv, (err) => {
+    fs.writeFile('../sheet.csv', csv, (err) => {
 	console.log(err || "done");
     });
 
