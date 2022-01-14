@@ -17,6 +17,121 @@
 
 std::unordered_map<int, VS> final; // multithreading TODO
 
+
+std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
+    int start = bhtml.find(key);
+    start += key.size();
+    int end = bhtml.find("\"", start);
+
+    if ( start == std::string::npos || end == std::string::npos || end < start) {
+	std::cerr << "Searching key error, on bparse bond" << std::endl;
+	return std::make_pair(-1, -1);
+    }
+    // std::cout << "start: " << start << std::endl;
+    // std::cout << "end: " << end << std::endl;
+    return std::make_pair(start, end);
+}
+
+
+// currency, name, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type
+VS Parser::bond() {
+    std::string Currency, IssuerName, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type;
+
+    // Currency : bondCurrencyCode
+    // IssuerName : bondIssuer
+    // Bid : endBidPrice
+    // Ask : endAskPrice
+    // Coupon : bondName 
+    // Maturity : bondName
+    // Rating : bondCreditRate
+    // YTM : yrsToMaturityDisplay
+    // Seniority : seniority (2nd)
+    // Type : bondType (2nd)
+    
+    // speed up
+    int bblkend = this->phtml.find(":[[");
+    std::string bhtml = this->phtml.substr(0, bblkend);
+    // Seperately
+    // 1. Currency, Coupon, Maturity 
+    std::string namekey = "bondName\":\"";
+    std::pair<int, int> np = this->bparse(bhtml, namekey);
+    std::string Name = bhtml.substr(np.first, np.second - np.first);
+    if (np.first == -1) return {};
+    // std::cout << "Name: " << Name << std::endl;
+
+    // 1.1 Coupon
+    int coupstart = Name.find(' ') + 1;
+    int coupend = Name.find('%', coupstart) + 1;
+    Coupon = Name.substr(coupstart, coupend - coupstart);
+    std::cout << "Coupon: " << Coupon << std::endl;
+
+    // 1.2 Maturity
+    int maturstart = Name.find(' ', coupend) + 1;
+    int maturend = Name.find(' ', maturstart);
+    Maturity = Name.substr(maturstart, maturend - maturstart);
+    std::cout << "Maturity: " << Maturity << std::endl;
+
+    // 1.3 Currency
+    int currstart = Name.find('(', maturend) + 1;
+    int currend = Name.find(')', currstart);
+    Currency = Name.substr(currstart, currend - currstart);
+    std::cout << "Currency: " << Currency << std::endl;
+
+
+    // 2. IssuerName
+    std::string issuerkey = "bondIssuer\":\"";
+    std::pair<int, int> ip = this->bparse(bhtml, issuerkey);
+    IssuerName = bhtml.substr(ip.first, ip.second - ip.first);
+    std::cout << "IssuerName: " << IssuerName << std::endl;
+
+    // 3. Bid
+    std::string bidkey = "endBidPrice\":";
+    std::pair<int, int> bp = this->bparse(bhtml, bidkey);
+    Bid = bhtml.substr(bp.first, bp.second - 1 - bp.first);
+    std::cout << "Bid: " << Bid << std::endl;
+
+    // 4. Ask 
+    std::string askkey = "endAskPrice\":";
+    std::pair<int, int> ap = this->bparse(bhtml, askkey);
+    Ask = bhtml.substr(ap.first, ap.second - 1 - ap.first);
+    std::cout << "Ask: " << Ask << std::endl;
+
+    // 5. Rating
+    std::string ratkey = "bondCreditRate\":\"";
+    std::pair<int, int> rp = this->bparse(bhtml, ratkey);
+    Rating = bhtml.substr(rp.first, rp.second - rp.first);
+    std::cout << "Rating: " << Rating << std::endl;
+
+    // 6. YTM
+    std::string ytmkey = "yrsToMaturityDisplay\":\"";
+    std::pair<int, int> yp = this->bparse(bhtml, ytmkey);
+    YTM = bhtml.substr(yp.first, yp.second - yp.first);
+    std::cout << "YTM: " << YTM << std::endl;
+
+    // 7. Seniority 2nd
+    std::string senkey = "seniority\":\"";
+    int sfirst = bhtml.find(senkey) + senkey.size();
+    int ssecond = bhtml.find(senkey, sfirst);
+    ssecond += senkey.size();
+    int send = bhtml.find("\"", ssecond);
+    Seniority = bhtml.substr(ssecond, send - ssecond);
+    std::cout << "Seniority: " << Seniority << std::endl;
+
+    // 8. Type 2nd
+    std::string typekey = "bondType\":\"";
+    int tfirst = bhtml.find(typekey) + typekey.size();
+    int tsecond = bhtml.find(typekey, tfirst);
+    tsecond += typekey.size();
+    int tend = bhtml.find("\"", tsecond);
+    Type = bhtml.substr(tsecond, tend - tsecond);
+    std::cout << "Type: " << Type << std::endl;
+
+
+    // currency, name, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type
+    VS ret = {Currency, IssuerName, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type};
+    return ret;
+}
+
 std::pair<int, int> Parser::gparse(std::string sblk, std::string key) {
     int start = sblk.find(key);
     start = sblk.find('>', start);
@@ -302,9 +417,9 @@ int main() {
     }
     */
 
-    std::string testcode = "APA220414P00027500";
-    std::string testtype = "Option";
-    std::string url = YAHOO + testcode;
+    std::string testcode = "AU3TB0000143";
+    std::string testtype = "Bond";
+    std::string url = BOND + testcode;
 
     // 3. Fetch html
 
@@ -319,7 +434,7 @@ int main() {
     // 4. Parse html
     
     Parser* parser = new Parser(html);
-    VS datafield = parser->option();
+    VS datafield = parser->bond();
     // std::string subhtml = parser->testwrapper();
 
 

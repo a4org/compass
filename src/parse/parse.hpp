@@ -27,7 +27,7 @@
 #include <thread>
 #include <filesystem>
 
-#define BOND  "https://www.bondsupermart.com/bsm/bond-factsheet/"
+#define BOND  "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/"
 #define YAHOO "https://finance.yahoo.com/quote/"
 #define VPSS std::vector<std::pair<std::string, std::string>>
 #define VPIS std::vector<std::pair<int, std::string>>
@@ -130,5 +130,14 @@ private:
      * return start and end point of the specific key
      */
     std::pair<int, int> gparse(std::string sblk, std::string key);
+
+    /**
+     * Parser::bparse
+     *
+     * Generitic parse function for bond
+     * return start and end point of the specific key
+     */
+    std::pair<int, int> bparse(std::string html, std::string key);
 };
+
 
