@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 const {google} = require('googleapis');
-const keys = require('./angold-compass.json')
+const keys = require('./creds.json')
 var fs = require('fs')
 
 const client = new google.auth.JWT(
@@ -36,7 +36,7 @@ async function gsrun(cl) {
 
     // TODO Define dataArray
 
-    fs.readFile('toutput.csv', "utf8", (error, data) => {
+    fs.readFile('coutput.csv', "utf8", (error, data) => {
 	if (error) {
 	    throw error;
 	}

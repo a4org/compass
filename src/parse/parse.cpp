@@ -573,7 +573,7 @@ int main() {
     
     std::cout << "All: " << numgroup << " finish!" << std::endl;
 
-    // 3.3 Deal with the remaining threads (if have any)
+    // 3.3 Deal with the remaining threads (if any)
     if (remain) {
 	int remainstart = numgroup * THRLIMIT;
 	pthread_t remainthreadpool[remain];
