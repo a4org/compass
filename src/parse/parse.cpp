@@ -4,7 +4,7 @@
 //
 // Identification: src/parse/parse.cpp
 //
-// Last Modified : 2022.1.12 Jiawei Wang
+// Last Modified : 2022.1.15 Jiawei Wang
 //
 // Copyright (c) 2022 Angold-4
 //
@@ -63,7 +63,7 @@ void *thrimp(void* indexurl) {
 
     std::string url = iturl;
 
-    // std::cout << "index: " << index << " " <<  "type: " << type << " " << "url: " << url << std::endl;
+    std::cout << "index: " << index << " " <<  "type: " << type << " " << "url: " << url << std::endl;
     
     // 2. Get html data
     
@@ -78,6 +78,7 @@ void *thrimp(void* indexurl) {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &curlBuffer);
     curl_easy_perform(curl);
 
+    std::cout << curlBuffer.size() << std::endl;
 
     // 3. Create parser and parse data
     
@@ -112,6 +113,7 @@ void *thrimp(void* indexurl) {
     thrdatafields[index] = datafield;
 
     std::cout << "Finishing thread: " << index << std::endl;
+
     pthread_exit(NULL);
 }
 
@@ -264,7 +266,7 @@ VS Parser::stock() {
     int currencyend   = this->phtml.find("</s", currencystart);
     if (currencystart == std::string::npos || currencyend == std::string::npos || currencyend < currencystart) {
 	std::cerr << "Searching key error, on parse stock" << std::endl;
-	return {};
+	return {"invalid"};
     }
 
     currencystart += 12;
@@ -354,7 +356,7 @@ VS Parser::option() {
     int currencyend   = this->phtml.find("</s", currencystart);
     if (currencystart == std::string::npos || currencyend == std::string::npos || currencyend < currencystart) {
 	std::cerr << "Searching key error, on parse option" << std::endl;
-	return {};
+	return {"invalid"};
     }
 
     currencystart += 12;
@@ -369,13 +371,13 @@ VS Parser::option() {
 	std::cout << "pcstart: " << pcstart << std::endl;
 	std::cout << "pcend: " << pcend << std::endl;
 	std::cerr << "Searching key error, on parse option" << std::endl;
-	return {};
+	return {"invalid"};
     }
     PutCall = this->phtml.substr(pcstart, pcend-pcstart);
     if (PutCall != "put" && PutCall != "call") {
 	std::cout << PutCall << std::endl;
 	std::cerr << "Searching key error, on parse put/call" << std::endl;
-	return {};
+	return {"invalid"};
     }
 
     // std::cout << "Put or Call: " << PutCall << std::endl;
@@ -467,9 +469,6 @@ std::string Parser::getYahooBlk(std::string shtml) {
     }
 
     std::string blk = shtml.substr(begidx, endidx-begidx);
-    std::ofstream out("test.html");
-    out << blk;
-    out.close();
     return shtml.substr(begidx, endidx-begidx); // 5114, 3214 chars
 };
 
@@ -507,7 +506,7 @@ int readcsv(std::string cpath, VPSS& codetype) {
 int main() {
     // 1. Read csv file from download.js (sheet)
     VPSS codetype; // code with its type
-    readcsv("tsheet.csv", codetype);
+    readcsv("sheet.csv", codetype);
     /*// for debugging
     for (auto p : codetype) {
 	std::cout << p.first << " " << p.second << std::endl;
@@ -537,11 +536,64 @@ int main() {
 
 
     
-    // 3.1 Threads Pool
+    // 3 Threads Execute
     int nthr = indexurl.size();
 
-    pthread_t threadpool[nthr];
+    // Allow 20 threads execute at the same time
 
+    // 3.1 Get the number of execution group
+    int remain = nthr % THRLIMIT;
+    int numgroup = nthr / THRLIMIT; // do not care about the remain < 20 numofthreads
+
+    std::cout << "Split them into: " << numgroup << " groups" << std::endl;
+    int currindex = 0;
+
+    // 3.2 Create all no-remain group and then execute them in parallel
+    // Then wait for all finish
+    for (int i = 0; i < numgroup; i++) {
+	pthread_t threadpool[THRLIMIT]; // Create a new threadpool 
+	for (int j = 0; j < THRLIMIT; j++) {
+	    std::string iturl = indexurl[currindex]; // index type url
+	    void* thrurl = static_cast<void*>(new std::string(iturl));
+
+	    int result = pthread_create(&threadpool[i], NULL, thrimp, thrurl);
+	    if (result != 0) {
+		std::cerr << "Error on creating thread " << i << std::endl;
+		continue;
+	    }
+	    currindex++;
+	}
+
+	// wait all threads to finish 
+	for (int fj = 0; fj < THRLIMIT; fj++) {
+	    pthread_join(threadpool[fj], NULL);
+	}
+	// std::this_thread::sleep_for(std::chrono::milliseconds(4000)); // sleep
+    }
+    
+    std::cout << "All: " << numgroup << " finish!" << std::endl;
+
+    // 3.3 Deal with the remaining threads (if have any)
+    if (remain) {
+	int remainstart = numgroup * THRLIMIT;
+	pthread_t remainthreadpool[remain];
+	for (int i = 0; i < remain; i++) {
+	    std::string iturl = indexurl[remainstart]; // index type url
+	    void* thrurl = static_cast<void*>(new std::string(iturl));
+	    int result = pthread_create(&remainthreadpool[i], NULL, thrimp, thrurl);
+	    if (result != 0) {
+		std::cerr << "Error on creating thread " << i << std::endl;
+		continue;
+	    }
+	    remainstart++;
+	}
+	// wait all threads to finish 
+	for (int fj = 0; fj < remain; fj++) {
+	    pthread_join(remainthreadpool[fj], NULL);
+	}
+    }
+
+    /*
     // 3.2 Create threads
     for (int i = 0; i < nthr; i++) {
 	std::string iturl = indexurl[i]; // index type url
@@ -554,22 +606,41 @@ int main() {
 	}
     }
 
-    // 3.3 Execute threads
+    // 3.3 Execute threads (at most 30 threads one moment)
+
+    int i = 0;
+    while (i < nthr) {
+	std::cout << "In thr loop..." << std::endl;
+	int j = i;
+        i += THRLIMIT;
+	if (i > nthr) i = nthr;
+	for (; j < i; j++) {
+	    pthread_join(threadpool[j], NULL);
+	}
+    }
+
     for (int i = 0; i < nthr; i++) {
 	pthread_join(threadpool[i], NULL);
     }
+    */
+
+    std::cout << "Now write them into files..." << std::endl;
 
     // 4. Write them into files
     std::ofstream testcsv;
-    testcsv.open("coutput.csv"); // test current dir
+    testcsv.open("toutput.csv"); // test current dir
+
     for (std::pair<int, VS> thrdatafield : thrdatafields) {
-	std::cout << thrdatafield.first << std::endl;
 	VS datafield = thrdatafield.second;
 	for (std::string s : datafield) {
+	    std::cout << s << ',';
 	    testcsv << s << ',';
 	}
+	std::cout << std::endl;
 	testcsv << '\n';
     }
+
+    testcsv.close();
 
     /*
     // 3. For each url, Create its CurlObj and Parser
