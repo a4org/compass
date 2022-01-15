@@ -4,7 +4,7 @@
 //
 // Identification: src/parse/parse.cpp
 //
-// Last Modified : 2022.1.12 Jiawei Wang
+// Last Modified : 2022.1.15 Jiawei Wang
 //
 // Copyright (c) 2022 Angold-4
 //
@@ -13,10 +13,19 @@
 #include "./parse.hpp"
 
 
-
 std::map<int, VS> thrdatafields; // sorted map for multithreading TODO
 
-VVS datafields; // final write-to-csv data (Test only)
+// VVS datafields; // final write-to-csv data (Test only)
+
+int curlWriter(char* data, int size, int nmemb, std::string* buffer) {
+    // write to the buffer
+    int result = 0;
+    if (buffer != NULL) {
+	buffer->append(data, size * nmemb);
+	result = size * nmemb;
+    }
+    return result;
+}
 
 /** 
  * thrimp()
@@ -24,8 +33,6 @@ VVS datafields; // final write-to-csv data (Test only)
  * just a wrapper of for loop in main()
  */
 void *thrimp(void* indexurl) { 
-
-
     VS datafield = {}; // store this data (S/O/B)
 
     // 1. Parse this "url", get index, url and type
@@ -57,22 +64,25 @@ void *thrimp(void* indexurl) {
     std::string url = iturl;
 
     std::cout << "index: " << index << " " <<  "type: " << type << " " << "url: " << url << std::endl;
-
-
+    
     // 2. Get html data
     
-    CurlObj* co = new CurlObj(url);
-    std::string html = co->getData();
-    if (html == "") { // invalid
-	datafield.push_back("Invalid");
-	datafields.push_back(datafield);
-	return (void *) 1;
-    }
+    // CurlObj* co = new CurlObj(url);
+    // std::string html = co->getData();
+    CURL* curl = curl_easy_init();
+    std::string curlBuffer = "";
 
+    if (!curl) throw std::string("Curl did not initialize.");
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriter);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &curlBuffer);
+    curl_easy_perform(curl);
+
+    std::cout << curlBuffer.size() << std::endl;
 
     // 3. Create parser and parse data
     
-    Parser* parser = new Parser(html); // Create its own parser
+    Parser* parser = new Parser(curlBuffer); // Create its own parser
     if (type == "Stock") {
 	datafield = parser->stock();
     } else if (type == "Option") {
@@ -93,15 +103,18 @@ void *thrimp(void* indexurl) {
 	}
 	datafield = stockfield;
     } else {
-	// cannot reach here
-	std::cerr << "Unexpected error, on creating parser with type" << std::endl;
+	// invalid type
+	std::cout << "Type Error" << std::endl;
+	datafield = {"invalid"};
     }
 
     // 4. Push valid data into datafields
     // datafields.push_back(datafield);
     thrdatafields[index] = datafield;
 
-    return (void *) 0;
+    std::cout << "Finishing thread: " << index << std::endl;
+
+    pthread_exit(NULL);
 }
 
 std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
@@ -153,50 +166,50 @@ VS Parser::bond() {
     int coupstart = Name.find(' ') + 1;
     int coupend = Name.find('%', coupstart) + 1;
     Coupon = Name.substr(coupstart, coupend - coupstart);
-    std::cout << "Coupon: " << Coupon << std::endl;
+    // std::cout << "Coupon: " << Coupon << std::endl;
 
     // 1.2 Maturity
     int maturstart = Name.find(' ', coupend) + 1;
     int maturend = Name.find(' ', maturstart);
     Maturity = Name.substr(maturstart, maturend - maturstart);
-    std::cout << "Maturity: " << Maturity << std::endl;
+    // std::cout << "Maturity: " << Maturity << std::endl;
 
     // 1.3 Currency
     int currstart = Name.find('(', maturend) + 1;
     int currend = Name.find(')', currstart);
     Currency = Name.substr(currstart, currend - currstart);
-    std::cout << "Currency: " << Currency << std::endl;
+    // std::cout << "Currency: " << Currency << std::endl;
 
 
     // 2. IssuerName
     std::string issuerkey = "bondIssuer\":\"";
     std::pair<int, int> ip = this->bparse(bhtml, issuerkey);
     IssuerName = bhtml.substr(ip.first, ip.second - ip.first);
-    std::cout << "IssuerName: " << IssuerName << std::endl;
+    // std::cout << "IssuerName: " << IssuerName << std::endl;
 
     // 3. Bid
     std::string bidkey = "endBidPrice\":";
     std::pair<int, int> bp = this->bparse(bhtml, bidkey);
     Bid = bhtml.substr(bp.first, bp.second - 1 - bp.first);
-    std::cout << "Bid: " << Bid << std::endl;
+    // std::cout << "Bid: " << Bid << std::endl;
 
     // 4. Ask 
     std::string askkey = "endAskPrice\":";
     std::pair<int, int> ap = this->bparse(bhtml, askkey);
     Ask = bhtml.substr(ap.first, ap.second - 1 - ap.first);
-    std::cout << "Ask: " << Ask << std::endl;
+    // std::cout << "Ask: " << Ask << std::endl;
 
     // 5. Rating
     std::string ratkey = "bondCreditRate\":\"";
     std::pair<int, int> rp = this->bparse(bhtml, ratkey);
     Rating = bhtml.substr(rp.first, rp.second - rp.first);
-    std::cout << "Rating: " << Rating << std::endl;
+    // std::cout << "Rating: " << Rating << std::endl;
 
     // 6. YTM
     std::string ytmkey = "yrsToMaturityDisplay\":\"";
     std::pair<int, int> yp = this->bparse(bhtml, ytmkey);
     YTM = bhtml.substr(yp.first, yp.second - yp.first);
-    std::cout << "YTM: " << YTM << std::endl;
+    // std::cout << "YTM: " << YTM << std::endl;
 
     // 7. Seniority 2nd
     std::string senkey = "seniority\":\"";
@@ -205,7 +218,7 @@ VS Parser::bond() {
     ssecond += senkey.size();
     int send = bhtml.find("\"", ssecond);
     Seniority = bhtml.substr(ssecond, send - ssecond);
-    std::cout << "Seniority: " << Seniority << std::endl;
+    // std::cout << "Seniority: " << Seniority << std::endl;
 
     // 8. Type 2nd
     std::string typekey = "bondType\":\"";
@@ -214,7 +227,7 @@ VS Parser::bond() {
     tsecond += typekey.size();
     int tend = bhtml.find("\"", tsecond);
     Type = bhtml.substr(tsecond, tend - tsecond);
-    std::cout << "Type: " << Type << std::endl;
+    // std::cout << "Type: " << Type << std::endl;
 
 
     // currency, name, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type
@@ -253,7 +266,7 @@ VS Parser::stock() {
     int currencyend   = this->phtml.find("</s", currencystart);
     if (currencystart == std::string::npos || currencyend == std::string::npos || currencyend < currencystart) {
 	std::cerr << "Searching key error, on parse stock" << std::endl;
-	return {};
+	return {"invalid"};
     }
 
     currencystart += 12;
@@ -272,7 +285,7 @@ VS Parser::stock() {
     O = blk.substr(op.first, op.second-op.first);
 
     // Just for debugging
-    std::cout << "Open: " << O << std::endl; 
+    // std::cout << "Open: " << O << std::endl; 
 
 
     // 2.2 High and Low price 
@@ -289,8 +302,8 @@ VS Parser::stock() {
     H = HL.substr(Hend, HL.size()-Hend);
 
     // Just for debugging
-    std::cout << "High: " << H << std::endl;
-    std::cout << "Low: " << L << std::endl;
+    // std::cout << "High: " << H << std::endl;
+    // std::cout << "Low: " << L << std::endl;
 
 
     // 2.3 Close price
@@ -300,7 +313,7 @@ VS Parser::stock() {
     C = blk.substr(cp.first, cp.second - cp.first);
 
     // Just for debugging
-    std::cout << "Close: " << C << std::endl;
+    // std::cout << "Close: " << C << std::endl;
 
     // 2.4 Volume 
     std::string volumekey = "TD_VOLUME-value";
@@ -317,7 +330,7 @@ VS Parser::stock() {
     for (auto it = Volume.begin(); it < Volume.end(); it++) {
 	if (*it == ',') Volume.erase(it);
     }
-    std::cout << "Volume: " << Volume << std::endl; 
+    // std::cout << "Volume: " << Volume << std::endl; 
 
     VS ret = {Currency, O, H, L, C, Volume};
     // filter ret value avoid xxx,xxx
@@ -343,12 +356,12 @@ VS Parser::option() {
     int currencyend   = this->phtml.find("</s", currencystart);
     if (currencystart == std::string::npos || currencyend == std::string::npos || currencyend < currencystart) {
 	std::cerr << "Searching key error, on parse option" << std::endl;
-	return {};
+	return {"invalid"};
     }
 
     currencystart += 12;
     Currency = this->phtml.substr(currencystart, currencyend-currencystart);
-    std::cout << "Currency: " << Currency << std::endl;
+    // std::cout << "Currency: " << Currency << std::endl;
 
     // 0.2 Get Put / Call
     std::string pckey = "</h1></div>";
@@ -358,16 +371,16 @@ VS Parser::option() {
 	std::cout << "pcstart: " << pcstart << std::endl;
 	std::cout << "pcend: " << pcend << std::endl;
 	std::cerr << "Searching key error, on parse option" << std::endl;
-	return {};
+	return {"invalid"};
     }
     PutCall = this->phtml.substr(pcstart, pcend-pcstart);
     if (PutCall != "put" && PutCall != "call") {
 	std::cout << PutCall << std::endl;
 	std::cerr << "Searching key error, on parse put/call" << std::endl;
-	return {};
+	return {"invalid"};
     }
 
-    std::cout << "Put or Call: " << PutCall << std::endl;
+    // std::cout << "Put or Call: " << PutCall << std::endl;
 
     // 1. Get block
     std::string blk = this->getYahooBlk(this->phtml);
@@ -381,7 +394,7 @@ VS Parser::option() {
     O = blk.substr(op.first, op.second-op.first);
 
     // Just for debugging
-    std::cout << "Open: " << O << std::endl; 
+    // std::cout << "Open: " << O << std::endl; 
 
 
     // 2.2 High and Low price 
@@ -398,8 +411,8 @@ VS Parser::option() {
     H = HL.substr(Hend, HL.size()-Hend);
 
     // Just for debugging
-    std::cout << "High: " << H << std::endl;
-    std::cout << "Low: " << L << std::endl;
+    // std::cout << "High: " << H << std::endl;
+    // std::cout << "Low: " << L << std::endl;
 
 
     // 2.3 Close price
@@ -409,7 +422,7 @@ VS Parser::option() {
     C = blk.substr(cp.first, cp.second - cp.first);
 
     // Just for debugging
-    std::cout << "Close: " << C << std::endl;
+    // std::cout << "Close: " << C << std::endl;
 
     // 2.4 Strike
     std::string strikekey = "STRIKE-value";
@@ -417,7 +430,7 @@ VS Parser::option() {
     
     Strike = blk.substr(strikep.first, strikep.second - strikep.first);
 
-    std::cout << "Strike: " << Strike << std::endl;
+    // std::cout << "Strike: " << Strike << std::endl;
 
     // 2.5 Expire date
     std::string exkey = "EXPIRE_DATE-value";
@@ -425,7 +438,7 @@ VS Parser::option() {
     
     ExDate = blk.substr(ExDatep.first, ExDatep.second-ExDatep.first);
 
-    std::cout << "ExDate: " << ExDate << std::endl;
+    // std::cout << "ExDate: " << ExDate << std::endl;
 
     // 2.6 Open Interest
     std::string interestkey = "OPEN_INTEREST-value";
@@ -433,7 +446,7 @@ VS Parser::option() {
 
     Interest = blk.substr(Interestp.first, Interestp.second-Interestp.first);
 
-    std::cout << "Open Interest: " << Interest << std::endl;
+    // std::cout << "Open Interest: " << Interest << std::endl;
 
     VS ret = {Currency, O, H, L, C, Strike, ExDate, PutCall, Interest};
     for (std::string& s : ret) {
@@ -456,9 +469,6 @@ std::string Parser::getYahooBlk(std::string shtml) {
     }
 
     std::string blk = shtml.substr(begidx, endidx-begidx);
-    std::ofstream out("test.html");
-    out << blk;
-    out.close();
     return shtml.substr(begidx, endidx-begidx); // 5114, 3214 chars
 };
 
@@ -483,7 +493,7 @@ int readcsv(std::string cpath, VPSS& codetype) {
 	}
 	csvfile.close();
     } catch (const std::ifstream::failure& e) {
-	std::cout << "Exception opening/reading file" << std::endl;
+	// std::cout << "Exception opening/reading file" << std::endl;
 	return 0;
     }
     return 1;
@@ -519,17 +529,70 @@ int main() {
 	else if (type == "Bond") url = BOND + code;
 	else {
 	    // do not alert
-	    url = "";
+	    url = " ";
 	}
 	indexurl.push_back(std::to_string(i)+ ',' + type + ',' + url);  // need to be parsed
     }
 
 
     
-    // 3.1 Threads Pool
+    // 3 Threads Execute
     int nthr = indexurl.size();
-    pthread_t threadpool[nthr];
 
+
+    // 3.1 Get the number of execution group
+    int remain = nthr % THRLIMIT;
+    int numgroup = nthr / THRLIMIT; // do not care about the remain < 20 numofthreads
+
+    std::cout << "Split them into: " << numgroup << " groups" << std::endl;
+    int currindex = 0;
+
+    // 3.2 Create all no-remain group and then execute them in parallel
+    // Then wait for all finish
+    for (int i = 0; i < numgroup; i++) {
+	pthread_t threadpool[THRLIMIT]; // Create a new threadpool 
+	for (int j = 0; j < THRLIMIT; j++) {
+	    std::string iturl = indexurl[currindex]; // index type url
+	    void* thrurl = static_cast<void*>(new std::string(iturl));
+
+	    int result = pthread_create(&threadpool[i], NULL, thrimp, thrurl);
+	    if (result != 0) {
+		std::cerr << "Error on creating thread " << i << std::endl;
+		continue;
+	    }
+	    currindex++;
+	}
+
+	// wait all threads to finish 
+	for (int fj = 0; fj < THRLIMIT; fj++) {
+	    pthread_join(threadpool[fj], NULL);
+	}
+	// std::this_thread::sleep_for(std::chrono::milliseconds(4000)); // sleep
+    }
+    
+    std::cout << "All: " << numgroup << " finish!" << std::endl;
+
+    // 3.3 Deal with the remaining threads (if any)
+    if (remain) {
+	int remainstart = numgroup * THRLIMIT;
+	pthread_t remainthreadpool[remain];
+	for (int i = 0; i < remain; i++) {
+	    std::string iturl = indexurl[remainstart]; // index type url
+	    void* thrurl = static_cast<void*>(new std::string(iturl));
+	    int result = pthread_create(&remainthreadpool[i], NULL, thrimp, thrurl);
+	    if (result != 0) {
+		std::cerr << "Error on creating thread " << i << std::endl;
+		continue;
+	    }
+	    remainstart++;
+	}
+	// wait all threads to finish 
+	for (int fj = 0; fj < remain; fj++) {
+	    pthread_join(remainthreadpool[fj], NULL);
+	}
+    }
+
+    /*
     // 3.2 Create threads
     for (int i = 0; i < nthr; i++) {
 	std::string iturl = indexurl[i]; // index type url
@@ -542,21 +605,41 @@ int main() {
 	}
     }
 
-    // 3.3 Execute threads
+    // 3.3 Execute threads (at most 30 threads one moment)
+
+    int i = 0;
+    while (i < nthr) {
+	std::cout << "In thr loop..." << std::endl;
+	int j = i;
+        i += THRLIMIT;
+	if (i > nthr) i = nthr;
+	for (; j < i; j++) {
+	    pthread_join(threadpool[j], NULL);
+	}
+    }
+
     for (int i = 0; i < nthr; i++) {
 	pthread_join(threadpool[i], NULL);
     }
+    */
+
+    std::cout << "Now write them into files..." << std::endl;
 
     // 4. Write them into files
     std::ofstream testcsv;
     testcsv.open("toutput.csv"); // test current dir
+
     for (std::pair<int, VS> thrdatafield : thrdatafields) {
 	VS datafield = thrdatafield.second;
 	for (std::string s : datafield) {
+	    std::cout << s << ',';
 	    testcsv << s << ',';
 	}
+	std::cout << std::endl;
 	testcsv << '\n';
     }
+
+    testcsv.close();
 
     /*
     // 3. For each url, Create its CurlObj and Parser
