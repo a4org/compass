@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 const {google} = require('googleapis');
-const keys = require('./creds.json')
+const keys = require('../../../Keys/compass-angold.json') // safety reason
 var fs = require('fs')
 
 const client = new google.auth.JWT(
