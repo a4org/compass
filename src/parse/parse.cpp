@@ -536,10 +536,28 @@ int main() {
 
 
     
-    // 3 Threads Execute
+    // 3. Threads Execute
     int nthr = indexurl.size();
 
+    pthread_t threadpool[nthr];
 
+    for (int i = 0; i < nthr; i++) {
+	std::string iturl = indexurl[i]; // index type url
+	void* thrurl = static_cast<void*>(new std::string(iturl));
+
+	int result = pthread_create(&threadpool[i], NULL, thrimp, thrurl);
+	if (result != 0) {
+	    std::cerr << "Error on creating thread " << i << std::endl;
+	    continue;
+	}
+    }
+
+    // wait all threads to finish 
+    for (int fj = 0; fj < nthr; fj++) {
+	pthread_join(threadpool[fj], NULL);
+    }
+
+    /*
     // 3.1 Get the number of execution group
     int remain = nthr % THRLIMIT;
     int numgroup = nthr / THRLIMIT; // do not care about the remain < 20 numofthreads
@@ -591,6 +609,7 @@ int main() {
 	    pthread_join(remainthreadpool[fj], NULL);
 	}
     }
+    */
 
     /*
     // 3.2 Create threads
