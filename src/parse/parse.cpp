@@ -14,9 +14,95 @@
 
 
 
-std::unordered_map<int, VS> final; // multithreading TODO
-VVS datafields; // final write-to-csv data
+std::map<int, VS> thrdatafields; // sorted map for multithreading TODO
 
+VVS datafields; // final write-to-csv data (Test only)
+
+/** 
+ * thrimp()
+ * single thread implementation for multithreading
+ * just a wrapper of for loop in main()
+ */
+void *thrimp(void* indexurl) { 
+
+
+    VS datafield = {}; // store this data (S/O/B)
+
+    // 1. Parse this "url", get index, url and type
+    std::string *sp = static_cast<std::string*>(indexurl);
+    std::string iturl = *sp;
+    
+    std::string sindex = "";
+
+    // 1.1 Get index
+    for (auto it = iturl.begin(); it < iturl.end(); it++) {
+	if (*it == ',') {
+	    iturl.erase(iturl.begin(), it+1);
+	    break;
+	}
+	sindex.push_back(*it);
+    }
+    int index = std::stoi(sindex);
+
+    // 1.2 Get type
+    std::string type = "";
+    for (auto it = iturl.begin(); it < iturl.end(); it++) {
+	if (*it == ',') {
+	    iturl.erase(iturl.begin(), it+1);
+	    break;
+	}
+	type.push_back(*it);
+    }
+
+    std::string url = iturl;
+
+    std::cout << "index: " << index << " " <<  "type: " << type << " " << "url: " << url << std::endl;
+
+
+    // 2. Get html data
+    
+    CurlObj* co = new CurlObj(url);
+    std::string html = co->getData();
+    if (html == "") { // invalid
+	datafield.push_back("Invalid");
+	datafields.push_back(datafield);
+	return (void *) 1;
+    }
+
+
+    // 3. Create parser and parse data
+    
+    Parser* parser = new Parser(html); // Create its own parser
+    if (type == "Stock") {
+	datafield = parser->stock();
+    } else if (type == "Option") {
+	datafield = parser->option();
+	// last
+	VS stockbondfield = {" ", " ", " ", " ", " ", " ", " ", " ", " ", 
+	    " ", " ", " ", " ", " ", " ", " "};
+	for (std::string data : datafield) {
+	    stockbondfield.push_back(data);
+	}
+	datafield = stockbondfield;
+
+    } else if (type == "Bond") {
+	datafield = parser->bond();
+	VS stockfield = {" ", " ", " ", " ", " ", " "};
+	for (std::string data : datafield) {
+	    stockfield.push_back(data);
+	}
+	datafield = stockfield;
+    } else {
+	// cannot reach here
+	std::cerr << "Unexpected error, on creating parser with type" << std::endl;
+    }
+
+    // 4. Push valid data into datafields
+    // datafields.push_back(datafield);
+    thrdatafields[index] = datafield;
+
+    return (void *) 0;
+}
 
 std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
     int start = bhtml.find(key);
@@ -418,9 +504,9 @@ int main() {
     */
 
     // 2. Concatenate urls
-    // {{1, url}, {2, url}} for multithreading TODO 
+    // {{1, url}, {2, url}} for multithreading
 
-    VPIS indexurl = {};
+    VS indexurl = {};
     for (int i = 0; i < codetype.size(); i++) {
 	std::pair<std::string, std::string> ct = codetype[i];
 	std::string code = ct.first;
@@ -435,10 +521,44 @@ int main() {
 	    // do not alert
 	    url = "";
 	}
-	
-	indexurl.push_back(std::make_pair(i, type+','+url)); 
+	indexurl.push_back(std::to_string(i)+ ',' + type + ',' + url);  // need to be parsed
     }
 
+
+    
+    // 3.1 Threads Pool
+    int nthr = indexurl.size();
+    pthread_t threadpool[nthr];
+
+    // 3.2 Create threads
+    for (int i = 0; i < nthr; i++) {
+	std::string iturl = indexurl[i]; // index type url
+	void* thrurl = static_cast<void*>(new std::string(iturl));
+
+	int result = pthread_create(&threadpool[i], NULL, thrimp, thrurl);
+	if (result != 0) {
+	    std::cerr << "Error on creating thread " << i << std::endl;
+	    continue;
+	}
+    }
+
+    // 3.3 Execute threads
+    for (int i = 0; i < nthr; i++) {
+	pthread_join(threadpool[i], NULL);
+    }
+
+    // 4. Write them into files
+    std::ofstream testcsv;
+    testcsv.open("toutput.csv"); // test current dir
+    for (std::pair<int, VS> thrdatafield : thrdatafields) {
+	VS datafield = thrdatafield.second;
+	for (std::string s : datafield) {
+	    testcsv << s << ',';
+	}
+	testcsv << '\n';
+    }
+
+    /*
     // 3. For each url, Create its CurlObj and Parser
     // TODO: add multithreading
 
@@ -514,6 +634,7 @@ int main() {
 	    testcsv << '\n';
 	}
     }
+    */
 
 
     /*// for debugging
