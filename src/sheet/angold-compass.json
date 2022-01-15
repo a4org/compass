@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "angold-compass",
+  "private_key_id": "1e52c0eb5481f7bcc5dc5e530fb01adafb52802b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCkCgQAiZ1Ho/1l\nP+jrPxUv81uofSA1ySJMrsp+mLlzkGpLD6JL+9XHTA+/A6XgnwxYd9GJXe03GeT2\nZO2SX8ccnbhBCqIfjmyJz9JZA2RBm2Rhnk7Udp+PJhVxwg1RdYzIgJ0lC8SBfLBA\nYcvLc4aDHifYeBtN4UX50hXpNSuHo2LVzwUonTadfwQwuds8trdaglWjoZFw5Mst\n0jeVt0h6AE7bMDS9dtpa1/5Ez+dpOrG8HV0K0rPh4NLa6nyWXc6/OEr1WH7VWe1J\nFcQOCWygPzIL5mm7wmMxff002joA/Ryo4KVf73ARi8pNI70WXL5oZfvm2xoAxKNS\n2EVlWSOfAgMBAAECggEABLX/JW1AF2djP6+xn4DL8qOVwCylFWLLBGCIPcMpu9Sr\nzFoM7Ce1qzYeU2zJumivzUzWRZBtUT7JPcR4eif/jqYM6AeAQfv3cx4vyUn43lV5\nVKPqPTKuB/RJe18zL9OW9KuU5ffL/enGPZTfoxdbsiFkkuKSzirEmOqjhVbpAsmZ\nWyJi56MZWbmBHyKVOVucMv8S1Ia9fM/OMZSFEOHyeqgiyJxCFKXHmrO6VW5BN753\nv4YMrcZxoa93gcyUe3QgvGZ4Z+ovni7eSoXfzV0SSudvHvU+ooYRe67Va6ep7f7r\nwqVIdZazpsdFD8Blyc2EeKRGmAjlWNN09rEVATS0OQKBgQDl4UUeU8dpoWIaWlGa\nV/39WwD/eTu24C97cSRSTgXVFkfyOWHrXeM4kORqsIe9ki14VTykDBpugO8b1ATR\nO6pvgXgTlGiCVvBRJym++CPXDwAbUGENcbQKSw9sRpyZk/d50gMuM8pphRJ6HWDC\nKMReieJsobfg0i8FlKrtmSHTQwKBgQC2rZKWHACDC6desgKGJkY62FNHzVwiWk6G\n4KB6YEPkcZX67jJU6tzKTUi38ywZ2cEbwFBtB8k7pLZ9rpwmw05JB1xzgab6bv3V\nrNVxLAY+t0r+lsbXHUVnNz5fJGjYlkFw/rZakNYK1gJ0qqTU79XwIcGNM+MuyrLf\nmbfdepWydQKBgQCXhsDnt7OnZhBjbIuDoGK0YQssWv5IkkfaJ38YnYNsrS4pdTed\nTJrdC2z1An3HMJa2TgEV5UB6/JQgFMZEIP88VuwOg/HLkIECDT2QOsJtHN8mIfqH\nQR669jUpWvYYqZcj/pHIH61ZlrTSN5EzCmo+IsdUcdjh4cnK9O8ihKDuPwKBgQCj\njykuCYhTzL1gRdWIswAyc7mtEiup/l1M2hYVO9fN0/1LHLYn3dktsKCpQqp7wsHp\nzPi1hkEgi8txIENjWX7gWBzotm8AzxuqkwLQP3Cf+pDE/c6uj+CyF35axUiyk2Wo\nfAZddEyQiyjLuHW4ybwtMqwPdyOzo30gQoujW7xoeQKBgG625TEHYI9IbdITdtYV\n8RFlegGc92g4qtJcEQTJPlS28dcl6/Uv5kua0pbLCFjlav/2ZIhDbFbhe97JptHn\nk5ms4wcQ/oNgD3PfcJXFy3M7zInJLB2BXgwfD9nmigLQaDOcV4JX5BNdUmjhCOYV\nDJHJHVwFr7dFpdcgb1nj/q4W\n-----END PRIVATE KEY-----\n",
+  "client_email": "angoldc@angold-compass.iam.gserviceaccount.com",
+  "client_id": "103974318122489832263",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/angoldc%40angold-compass.iam.gserviceaccount.com"
+}

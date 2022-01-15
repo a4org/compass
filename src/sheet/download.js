@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 const {google} = require('googleapis');
-const keys = require('./creds.json')
+const keys = require('./angold-compass.json')
 var fs = require('fs')
 
 const client = new google.auth.JWT(
@@ -37,7 +37,7 @@ async function gsrun(cl) {
     const opt = {
 	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
 	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Data!C9:D50',
+	range: 'Data!C9:D200',
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
