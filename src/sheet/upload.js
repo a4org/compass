@@ -36,7 +36,7 @@ async function gsrun(cl) {
 
     // TODO Define dataArray
 
-    fs.readFile('coutput.csv', "utf8", (error, data) => {
+    fs.readFile('toutput.csv', "utf8", (error, data) => {
 	if (error) {
 	    throw error;
 	}
