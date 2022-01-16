@@ -112,6 +112,7 @@ void *thrimp(void* indexurl) {
     // datafields.push_back(datafield);
     thrdatafields[index] = datafield;
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // sleep
     std::cout << "Finishing thread: " << index << std::endl;
 
     pthread_exit(NULL);
@@ -568,7 +569,6 @@ int main() {
 	for (int fj = 0; fj < THRLIMIT; fj++) {
 	    pthread_join(threadpool[fj], NULL);
 	}
-	std::this_thread::sleep_for(std::chrono::milliseconds(4000)); // sleep
     }
     
     std::cout << "All: " << numgroup << " finish!" << std::endl;
