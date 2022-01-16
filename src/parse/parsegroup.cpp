@@ -113,6 +113,7 @@ void *thrimp(void* indexurl) {
     thrdatafields[index] = datafield;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // sleep
+
     std::cout << "Finishing thread: " << index << std::endl;
 
     pthread_exit(NULL);
