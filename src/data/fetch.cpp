@@ -48,16 +48,16 @@ private:
 
 int main() {
     // Stock
-    std::string testIBM = "https://finance.yahoo.com/quote/IBM";
-    std::string testAMZ = "https://finance.yahoo.com/quote/AMZN";
+    std::string testIBM = "https://finance.yahoo.com/quote/IB";
+    std::string testAMZ = "https://finance.yahoo.com/quote/AM";
 
     // Option
-    std::string testUGI = "https://finance.yahoo.com/quote/UGI220414P00040000";
-    std::string testNDX = "https://finance.yahoo.com/quote/NDX220414P15500000";
+    std::string testUGI = "https://finance.yahoo.com/quote/UGI220414P0004000"; // 0
+    std::string testNDX = "https://finance.yahoo.com/quote/NDX220414P1550000"; // 0
 
     // Bond
-    std::string testAGB = "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/AU3TB0000143";
-    std::string testCGB = "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/HK0000317724";
+    std::string testAGB = "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/AU3TB000014"; // 3
+    std::string testCGB = "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/HK000031772"; // 4
 
 
     std::vector<std::string> testall = {testIBM, testAMZ, testUGI, testNDX, testAGB, testCGB};
