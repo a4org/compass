@@ -14,6 +14,7 @@
 
 
 std::map<int, VS> thrdatafields; // sorted map for multithreading TODO
+pthread_mutex_t mutex;
 
 // VVS datafields; // final write-to-csv data (Test only)
 
@@ -513,6 +514,7 @@ int main() {
     }
     */
 
+    pthread_mutex_init(&mutex, NULL); // deafult
     // 2. Concatenate urls
     // {{1, url}, {2, url}} for multithreading
 
