@@ -485,7 +485,8 @@ int main() {
 		}
 		std::reverse(code.begin(), code.end());
 		stockdata.erase(stockdata.begin());
-		datafield = {currency, code};
+		datafield = {currency};
+		if (currency != "Invalid Code") datafield.push_back(code);
 		for (std::string data : stockdata) datafield.push_back(data);
 		stockurlmap[url] = datafield;
 	    }
