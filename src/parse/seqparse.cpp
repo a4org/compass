@@ -1,10 +1,10 @@
 //===----------------------------------------------------------------------===// compass
 //
-// parse.cpp
+// seqparse.cpp
 //
-// Identification: src/parse/parse.cpp
+// Identification: src/parse/seqparse.cpp
 //
-// Last Modified : 2022.1.12 Jiawei Wang
+// Last Modified : 2022.1.17 Jiawei Wang
 //
 // Copyright (c) 2022 Angold-4
 //
@@ -13,6 +13,7 @@
 #include "./parse.hpp"
 
 
+// stable version of parsing in compass
 
 std::unordered_map<int, VS> final; // multithreading TODO
 VVS datafields; // final write-to-csv data
@@ -417,7 +418,7 @@ int main() {
     }
     */
 
-    // 2. Concatenate urls
+    // 2.1 Concatenate urls
     // {{1, url}, {2, url}} for multithreading TODO 
 
     VPIS indexurl = {};
@@ -439,17 +440,20 @@ int main() {
 	indexurl.push_back(std::make_pair(i, type+','+url)); 
     }
 
-    // 3. For each url, Create its CurlObj and Parser
-    // TODO: add multithreading
+    // 2.2 Mapping them into a url map
+    UMSV stockurlmap = {};  // stock url map, map url with its data
+    UMSV optionurlmap = {}; // option url map, map url with its data
+    UMSV bondurlmap = {};   // bond url map, map url with its data
+
+    // 3. For each url
 
     for (auto pis : indexurl) {
-	// for each url, in this step, we do not care whether it is valid or not
-	// (actually, we cannot do that now) just check when push back to datafields
-	
-	VS datafield = {}; // store this data (S/O/B)
+    // for each url, in this step, we do not care whether it is valid or not
+    // (actually, we cannot do that now) just check when push back to datafields
 
-	// 1. Parse this "url", get url and type
-	
+	VS datafield = {}; // store this data (S/O/B) ans
+
+	// 3.1 Parse this "url", get url and type
 	std::string url = pis.second;
 	std::cout << url << std::endl;
 	std::string type = "";
@@ -461,49 +465,58 @@ int main() {
 	    type.push_back(*it);
 	}
 
+	// 3.2 Check whether map contains this url
 
-	// 2. Get html data
-	
-	CurlObj* co = new CurlObj(url);
-	std::string html = co->getData();
-	if (html == "") { // invalid
-	    datafield.push_back("Invalid");
-	    datafields.push_back(datafield);
-	    continue;
-	}
-
-
-	// 3. Create parser and parse data
-	
-	Parser* parser = new Parser(html); // Create its own parser
-	if (type == "Stock") {
-	    datafield = parser->stock();
-	} else if (type == "Option") {
-	    datafield = parser->option();
-	    // last
-	    VS stockbondfield = {" ", " ", " ", " ", " ", " ", " ", " ", " ", 
-		" ", " ", " ", " ", " ", " ", " ", " "};
-	    for (std::string data : datafield) {
-		stockbondfield.push_back(data);
+	if (type == "stock") {
+	    if (stockurlmap.find(url) != stockurlmap.end()) {
+		datafield = stockurlmap[url];
+	    } else {
+		CurlObj* co = new CurlObj(url);
+		std::string html = co->getData();
+		Parser* parser = new Parser(html);
+		datafield = parser->stock();
+		stockurlmap[url] = datafield;
 	    }
-	    datafield = stockbondfield;
-
-	} else if (type == "Bond") {
-	    datafield = parser->bond();
-	    VS stockfield = {" ", " ", " ", " ", " ", " ", " ", " "};
-	    for (std::string data : datafield) {
-		stockfield.push_back(data);
+	} else if (type == "option") {
+	    if (optionurlmap.find(url) != optionurlmap.end()) {
+		datafield = optionurlmap[url];
+	    } else {
+		CurlObj* co = new CurlObj(url);
+		std::string html = co->getData();
+		Parser* parser = new Parser(html);
+		datafield = parser->option();
+		VS optionfield = {" ", " ", " ", " ", " ", " ", " ", " ", " ", 
+		    " ", " ", " ", " ", " ", " ", " ", " "};
+		for (std::string data : datafield) {
+		    optionfield.push_back(data);
+		}
+		datafield = optionfield;
+		optionurlmap[url] = datafield;
 	    }
-	    datafield = stockfield;
+	} else if (type == "bond") {
+	    if (bondurlmap.find(url) != bondurlmap.end()) {
+		datafield = bondurlmap[url];
+	    } else {
+		CurlObj* co = new CurlObj(url);
+		std::string html = co->getData();
+		Parser* parser = new Parser(html);
+		datafield = parser->bond();
+		VS bondfield = {" ", " ", " ", " ", " ", " ", " ", " "};
+		for (std::string data : datafield) {
+		    bondfield.push_back(data);
+		}
+		datafield = bondfield;
+		bondurlmap[url] = datafield;
+	    }
 	} else {
-	    // cannot reach here
-	    std::cerr << "Unexpected error, on creating parser with type" << std::endl;
+	    // Invalid
+	    datafield = {"Invalid Type"};
 	}
 
 	// 4. Push valid data into datafields
 	datafields.push_back(datafield);
 
-	// 5. Write to file (testonly)
+	// 5. Write to file
 	std::ofstream testcsv;
 	testcsv.open("toutput.csv");
 
@@ -514,43 +527,4 @@ int main() {
 	    testcsv << '\n';
 	}
     }
-
-
-    /*// for debugging
-    for (auto p : indexurl) {
-	std::cout << p.first << " " << p.second << std::endl;
-    }
-    */
-
-    /*
-    std::string testcode = "HSBC";
-    std::string testtype = "Stock";
-    std::string url = YAHOO + testcode;
-    // 3. Fetch html
-    CurlObj* co = new CurlObj(url);
-    std::string html = co->getData();
-    // for debugging
-    std::ofstream out("../test.html");
-    out << html;
-    out.close();
-    // 4. Parse html
-    
-    Parser* parser = new Parser(html);
-    VS datafield = parser->stock();
-    // std::string subhtml = parser->testwrapper();
-    // 5. Write to csv file
-    std::ofstream testcsv;
-    testcsv.open("../coutput.csv");
-    for (VS datafield : datafields) {
-	for (std::string s : datafield) {
-	    testcsv << s << ',';
-	}
-    }
-    */
-
-    /* // for debugging
-    std::ofstream out("test.html");
-    out << subhtml;
-    out.close();
-    */
 }
