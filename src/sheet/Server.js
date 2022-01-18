@@ -3,11 +3,10 @@ const { exec } = require('child_process');
 
 const httpserver = http.createServer();
 
-
 httpserver.on("request", (req, res) => {
-    console.log(req);
     var compass = exec('./compass.sh',
 	    (error, stdout, stderr) => {
+		res.write(stdout);
 		console.log(stdout);
 		console.log(stderr);
 		if (error !== null) {
@@ -15,9 +14,7 @@ httpserver.on("request", (req, res) => {
 		}
 	    }
     );
-    res.write("got request!");
-    res.write(compass);
-    // res.end();
+    res.end();
 })
 
 
