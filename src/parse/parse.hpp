@@ -16,6 +16,7 @@
 #include <curl/curl.h>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 #include <map>
 #include <stdio.h>
 #include <fstream>
