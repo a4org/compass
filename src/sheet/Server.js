@@ -14,7 +14,6 @@ httpserver.on("request", (req, res) => {
 		}
 	    }
     );
-    res.end();
 })
 
 
