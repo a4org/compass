@@ -16,7 +16,8 @@ httpserver.on("request", (req, res) => {
 	    }
     );
     res.write("got request!");
-    res.end();
+    res.write(compass);
+    // res.end();
 })
 
 
