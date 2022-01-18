@@ -12,10 +12,8 @@
 
 #include "./parse.hpp"
 
-
 // stable version of parsing in compass
 
-std::unordered_map<int, VS> final; // multithreading TODO
 VVS datafields; // final write-to-csv data
 
 
@@ -37,7 +35,7 @@ std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
 // currency, name, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Typ
 VS Parser::bond() {
     if (this->phtml.size() < 1000) {
-	VS invalidret = {"invalid"};
+	VS invalidret = {"Invalid Code"};
 	return invalidret;
     }
     std::string Currency, IssuerName, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type;
@@ -157,7 +155,7 @@ std::pair<int, int> Parser::gparse(std::string sblk, std::string key) {
 // currency, O, H, L, C, Volume
 VS Parser::stock() {
     if (this->phtml.size() < 100) {
-	VS invalidret = {"invalid"};
+	VS invalidret = {"Invalid Code"};
 	return invalidret;
     }
     std::string Currency, O, H, L, C, Volume;
@@ -247,7 +245,7 @@ VS Parser::stock() {
 // currency, O, H, L, C, Strike, Ex Date, Put/Call,  Open interest
 VS Parser::option() {
     if (this->phtml.size() < 100) {
-	VS invalidret = {"invalid"};
+	VS invalidret = {"Invalid Code"};
 	return invalidret;
     }
     std::string Currency, O, H, L, C, Strike, ExDate, PutCall, Interest;
@@ -466,15 +464,29 @@ int main() {
 	}
 
 	// 3.2 Check whether map contains this url
-
 	if (type == "Stock") {
 	    if (stockurlmap.find(url) != stockurlmap.end()) {
 		datafield = stockurlmap[url];
 	    } else {
 		CurlObj* co = new CurlObj(url);
 		std::string html = co->getData();
+
 		Parser* parser = new Parser(html);
-		datafield = parser->stock();
+		VS stockdata = parser->stock();
+
+		std::string currency = stockdata[0];
+		// parse code 
+		std::string code = "";
+		for (auto rit = url.rbegin(); rit < url.rend(); rit++)  {
+		    if (*rit == '/') {
+			break;
+		    }
+		    code += *rit;
+		}
+		std::reverse(code.begin(), code.end());
+		stockdata.erase(stockdata.begin());
+		datafield = {currency, code};
+		for (std::string data : stockdata) datafield.push_back(data);
 		stockurlmap[url] = datafield;
 	    }
 	} else if (type == "Option") {
@@ -485,8 +497,10 @@ int main() {
 		std::string html = co->getData();
 		Parser* parser = new Parser(html);
 		datafield = parser->option();
-		VS optionfield = {" ", " ", " ", " ", " ", " ", " ", " ", " ", 
-		    " ", " ", " ", " ", " ", " ", " ", " "};
+		std::string currency = datafield[0];
+		datafield.erase(datafield.begin());  // move currency to begin
+		VS optionfield = {currency, " ", " ", " ", " ", " ", " ", " ", " ", " ", 
+		    " ", " ", " ", " ", " ", " "};
 		for (std::string data : datafield) {
 		    optionfield.push_back(data);
 		}
@@ -501,7 +515,9 @@ int main() {
 		std::string html = co->getData();
 		Parser* parser = new Parser(html);
 		datafield = parser->bond();
-		VS bondfield = {" ", " ", " ", " ", " ", " ", " ", " "};
+		std::string currency = datafield[0];
+		datafield.erase(datafield.begin());
+		VS bondfield = {currency, " ", " ", " ", " ", " ", " "};
 		for (std::string data : datafield) {
 		    bondfield.push_back(data);
 		}
