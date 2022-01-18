@@ -52,9 +52,9 @@ async function gsrun(cl) {
 	console.log(dataArray);
 
 	const inputopt = {
-	    spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
-	    // spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	    range: 'Data!G73',
+	    // spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
+	    spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+	    range: '1 Trade Record!V5',
 	    valueInputOption: 'USER_ENTERED',
 	    resource: {values: dataArray}
 	};
