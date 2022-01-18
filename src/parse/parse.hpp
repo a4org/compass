@@ -34,6 +34,7 @@
 #define VVS  std::vector<std::vector<std::string>> 
 #define VPSS std::vector<std::pair<std::string, std::string>>
 #define VPIS std::vector<std::pair<int, std::string>>
+#define UMSV std::unordered_map<std::string, std::vector<std::string>>
 #define VS std::vector<std::string>
 
 // CurlObj is the class to handle url

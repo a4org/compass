@@ -467,7 +467,7 @@ int main() {
 
 	// 3.2 Check whether map contains this url
 
-	if (type == "stock") {
+	if (type == "Stock") {
 	    if (stockurlmap.find(url) != stockurlmap.end()) {
 		datafield = stockurlmap[url];
 	    } else {
@@ -477,7 +477,7 @@ int main() {
 		datafield = parser->stock();
 		stockurlmap[url] = datafield;
 	    }
-	} else if (type == "option") {
+	} else if (type == "Option") {
 	    if (optionurlmap.find(url) != optionurlmap.end()) {
 		datafield = optionurlmap[url];
 	    } else {
@@ -493,7 +493,7 @@ int main() {
 		datafield = optionfield;
 		optionurlmap[url] = datafield;
 	    }
-	} else if (type == "bond") {
+	} else if (type == "Bond") {
 	    if (bondurlmap.find(url) != bondurlmap.end()) {
 		datafield = bondurlmap[url];
 	    } else {
