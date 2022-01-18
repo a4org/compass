@@ -54,7 +54,7 @@ async function gsrun(cl) {
 	const inputopt = {
 	    spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
 	    // spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	    range: 'Data!E9',
+	    range: 'Data!G73',
 	    valueInputOption: 'USER_ENTERED',
 	    resource: {values: dataArray}
 	};

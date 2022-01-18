@@ -37,7 +37,7 @@ async function gsrun(cl) {
     const opt = {
 	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ',
 	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Data!C9:D500',
+	range: 'Data!C73:D500',
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
