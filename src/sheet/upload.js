@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 const {google} = require('googleapis');
-const keys = require('../../../Keys/compass-angold.json') // safety reason
+const keys = require('../../../Keys/compass.json') // safety reason
 var fs = require('fs')
 
 const client = new google.auth.JWT(
@@ -54,7 +54,7 @@ async function gsrun(cl) {
 	const inputopt = {
 	    // spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
 	    spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	    range: '1 Trade Record!V5',
+	    range: 'Prelim Check!V5',
 	    valueInputOption: 'USER_ENTERED',
 	    resource: {values: dataArray}
 	};
