@@ -12,8 +12,11 @@ httpserver.on("request", (req, res) => {
 		if (error !== null) {
 		    console.log(`exec error: ${error}`);
 		}
+		res.end();
 	    }
     );
+
+
 })
 
 
