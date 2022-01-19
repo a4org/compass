@@ -4,7 +4,7 @@
 //
 // Identification: src/parse/seqparse.cpp
 //
-// Last Modified : 2022.1.17 Jiawei Wang
+// Last Modified : 2022.1.19 Jiawei Wang
 //
 // Copyright (c) 2022 Angold-4
 //
@@ -15,7 +15,6 @@
 // stable version of parsing in compass
 
 VVS datafields; // final write-to-csv data
-
 
 std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
     int start = bhtml.find(key);
@@ -35,7 +34,7 @@ std::pair<int, int> Parser::bparse(std::string bhtml, std::string key) {
 // currency, name, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Typ
 VS Parser::bond() {
     if (this->phtml.size() < 1000) {
-	VS invalidret = {"Invalid Code"};
+	VS invalidret = {" "};
 	return invalidret;
     }
     std::string Currency, IssuerName, Bid, Ask, Coupon, Maturity, Rating, YTM, Seniority, Type;
@@ -155,7 +154,7 @@ std::pair<int, int> Parser::gparse(std::string sblk, std::string key) {
 // currency, O, H, L, C, Volume
 VS Parser::stock() {
     if (this->phtml.size() < 100) {
-	VS invalidret = {"Invalid Code"};
+	VS invalidret = {" "};
 	return invalidret;
     }
     std::string Currency, O, H, L, C, Volume;
@@ -245,7 +244,7 @@ VS Parser::stock() {
 // currency, O, H, L, C, Strike, Ex Date, Put/Call,  Open interest
 VS Parser::option() {
     if (this->phtml.size() < 100) {
-	VS invalidret = {"Invalid Code"};
+	VS invalidret = {" "};
 	return invalidret;
     }
     std::string Currency, O, H, L, C, Strike, ExDate, PutCall, Interest;
@@ -475,6 +474,16 @@ int main() {
 		VS stockdata = parser->stock();
 
 		std::string currency = stockdata[0];
+		if (currency == " ") {
+		    // invalid code, build invalid datafield check-ticker code set to 1
+		    for (int i = 0; i < 31; i++) {
+			datafield.push_back(" ");
+		    }
+		    datafield.push_back("1"); datafield.push_back(" ");
+		    datafields.push_back(datafield);
+		    stockurlmap[url] = datafield;
+		    continue; // next url
+		}
 		// parse code 
 		std::string code = "";
 		for (auto rit = url.rbegin(); rit < url.rend(); rit++)  {
@@ -499,6 +508,16 @@ int main() {
 		Parser* parser = new Parser(html);
 		datafield = parser->option();
 		std::string currency = datafield[0];
+		if (currency == " ") {
+		    // invalid code, build invalid datafield check-ticker code set to 1
+		    for (int i = 0; i < 31; i++) {
+			datafield.push_back(" ");
+		    }
+		    datafield.push_back("1"); datafield.push_back(" ");
+		    datafields.push_back(datafield);
+		    stockurlmap[url] = datafield;
+		    continue; // next url
+		}
 		datafield.erase(datafield.begin());  // move currency to begin
 		VS optionfield = {currency, " ", " ", " ", " ", " ", " ", " ", " ", " ", 
 		    " ", " ", " ", " ", " ", " "};
@@ -517,6 +536,16 @@ int main() {
 		Parser* parser = new Parser(html);
 		datafield = parser->bond();
 		std::string currency = datafield[0];
+		if (currency == " ") {
+		    // invalid code, build invalid datafield check-ticker code set to 1
+		    for (int i = 0; i < 31; i++) {
+			datafield.push_back(" ");
+		    }
+		    datafield.push_back("1"); datafield.push_back(" ");
+		    datafields.push_back(datafield);
+		    stockurlmap[url] = datafield;
+		    continue; // next url
+		}
 		datafield.erase(datafield.begin());
 		VS bondfield = {currency, " ", " ", " ", " ", " ", " "};
 		for (std::string data : datafield) {
@@ -526,22 +555,25 @@ int main() {
 		bondurlmap[url] = datafield;
 	    }
 	} else {
-	    // Invalid
-	    datafield = {"Invalid Type"};
+	    // invalid code, build invalid datafield check-ticker code set to 1
+	    for (int i = 0; i < 31; i++) {
+		datafield.push_back(" ");
+	    }
+	    datafield.push_back("1"); datafield.push_back(" ");
+	    stockurlmap[url] = datafield;
 	}
 
 	// 4. Push valid data into datafields
 	datafields.push_back(datafield);
+    }
+    // 5. Write to file
+    std::ofstream testcsv;
+    testcsv.open("toutput.csv");
 
-	// 5. Write to file
-	std::ofstream testcsv;
-	testcsv.open("toutput.csv");
-
-	for (VS datafield : datafields) {
-	    for (std::string s : datafield) {
-		testcsv << s << ',';
-	    }
-	    testcsv << '\n';
+    for (VS datafield : datafields) {
+	for (std::string s : datafield) {
+	    testcsv << s << ',';
 	}
+	testcsv << '\n';
     }
 }
