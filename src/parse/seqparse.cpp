@@ -554,6 +554,9 @@ int main() {
 		datafield = bondfield;
 		bondurlmap[url] = datafield;
 	    }
+	} else if (type == "Cash" || type == "TD") {
+	    std::string currency = "HKD"; // default currency
+	    datafield = {currency};
 	} else {
 	    // invalid code, build invalid datafield check-ticker code set to 1
 	    for (int i = 0; i < 31; i++) {
