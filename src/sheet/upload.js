@@ -28,6 +28,7 @@ fs.readFile('line.txt', "utf8", (error, data) => {
 	throw error;
     }
     line = data.toString(); // the line variable
+    line = line.slice(0, -1);
     client.authorize(function(err, tokens){ // call back function
 	if (err) {
 	    console.log(err);

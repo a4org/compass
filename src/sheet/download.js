@@ -32,7 +32,8 @@ fs.readFile('line.txt', "utf8", (error, data) => {
     if (error) {
 	throw error;
     }
-    line = data.toString(); // the line variable
+    line = data.toString();   // the line variable
+    line = line.slice(0, -1); // remove the last character
     client.authorize(function(err, tokens){ // call back function
 	if (err) {
 	    console.log(err);
