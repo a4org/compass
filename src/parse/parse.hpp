@@ -74,6 +74,7 @@ private:
 class Parser {
 public:
     Parser (std::string html) : phtml(html){};
+    Parser() = default;
 
     /**
      * Parser::stock()
@@ -146,3 +147,68 @@ private:
 };
 
 
+
+// HistParser is the class to deal with the history data html file
+// Which is inherance from Parser class
+class HistParser : private Parser {
+public:
+    HistParser (std::string html) : phtml(html) {};
+
+    /**
+     * HistParser::hstock()
+     *
+     * Parse all fixed prices from Yahoo finance (O H L C Volume)
+     */
+    VS hstock();
+
+
+    /**
+     * HistParser::hbond()
+     *
+     * Parse all fixed prices from Yahoo finance (Bid Ask)
+     */
+    VS hbond();
+
+    /**
+     * HistParser::hoption()
+     *
+     * Parse all fixed prices from Yahoo finance )
+     */
+    VS hoption();
+
+
+
+
+private:
+    std::string phtml;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+};

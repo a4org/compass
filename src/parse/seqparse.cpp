@@ -506,6 +506,14 @@ int main() {
 		datafield = optionurlmap[url];
 	    } else {
 		CurlObj* co = new CurlObj(url);
+		std::string code = "";
+		for (auto rit = url.rbegin(); rit < url.rend(); rit++)  {
+		    if (*rit == '/') {
+			break;
+		    }
+		    code += *rit;
+		}
+		std::reverse(code.begin(), code.end());
 		std::string html = co->getData();
 		Parser* parser = new Parser(html);
 		datafield = parser->option();
@@ -522,7 +530,7 @@ int main() {
 		}
 		datafield.erase(datafield.begin());  // move currency to begin
 		VS optionfield = {currency, " ", " ", " ", " ", " ", " ", " ", " ", " ", 
-		    " ", " ", " ", " ", " ", " "};
+		    " ", " ", " ", " ", " ", " ", code};
 		for (std::string data : datafield) {
 		    optionfield.push_back(data);
 		}
