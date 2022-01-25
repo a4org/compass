@@ -48,13 +48,15 @@ async function gsrun(cl) {
     let data = await gsapi.spreadsheets.values.get(opt);
     let dataArray = data.data.values;
     console.log(dataArray);
+    console.log(dataArray.length);
 
 
+    /*
     var csv = dataArray.map(function(d){
 	return d.join();
     }).join('\n');
+    */
 
-    console.log(csv.length);
 
     /*
     fs.writeFile('sheet.csv', csv, (err) => {
