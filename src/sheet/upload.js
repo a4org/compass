@@ -52,9 +52,9 @@ async function gsrun(cl) {
 	console.log(dataArray);
 
 	const inputopt = {
-	    // spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
-	    spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	    range: 'Prelim Check!V5',
+	    spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
+	    // spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+	    range: 'Prelim Check!E73',
 	    valueInputOption: 'USER_ENTERED',
 	    resource: {values: dataArray}
 	};

@@ -5,11 +5,13 @@
 //
 // Identification: src/sheet/download.js
 //
-// Last Modified : 2022.1.12 Jiawei Wang
+// Last Modified : 2022.1.25 Jiawei Wang 
 //
 // Copyright (c) 2022 Angold-4
 //
 //===----------------------------------------------------------------------===//
+
+// Test Logic
 
 const {google} = require('googleapis');
 const keys = require('../../../Keys/compass.json') // safety reason
@@ -35,9 +37,9 @@ async function gsrun(cl) {
     const gsapi = google.sheets({version:'v4', auth:cl});
 
     const opt = {
-	// spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', Test only
-	spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Prelim Check!H5:I1000',
+	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
+	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+	range: 'Prelim Check!C73:D1000',
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
