@@ -15,6 +15,7 @@
 
 const {google} = require('googleapis');
 const keys = require('../../../Keys/compass.json') // safety reason
+
 var fs = require('fs')
 
 const client = new google.auth.JWT(
@@ -27,18 +28,16 @@ const client = new google.auth.JWT(
 
 // #1 Get the yesterday line
 
-let line = 0; // line variable
+var line = 0; // line variable (global)
 
+/*
 fs.readFile('line.txt', "utf8", (error, data) => {
     if (error) {
 	throw error;
     }
     line = data.toString(); // the line variable
 });
-
-console.log(line);
-
-// #2 Authorize the token, connect to the google api
+*/
 
 client.authorize(function(err, tokens){ // call back function
     if (err) {
@@ -46,6 +45,7 @@ client.authorize(function(err, tokens){ // call back function
 	return;
     }
     console.log('Connected');
+    console.log(line);
     gsrun(client) // download the data
 });
 
@@ -55,11 +55,12 @@ async function gsrun(cl) {
     const opt = {
 	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
 	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Prelim Check!' + 'C' + line + ':D2000', // I only need that data today
+	range: 'Prelim Check!C135:D2000', // I only need that data today
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
     let dataArray = data.data.values;
+
     console.log(dataArray);
 
     var csv = dataArray.map(function(d){
@@ -71,8 +72,9 @@ async function gsrun(cl) {
     fs.writeFile('sheet.csv', csv, (err) => {
 	console.log(err || "done");
     });
-
 }
+
+
 
 
 
