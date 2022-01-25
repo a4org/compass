@@ -418,9 +418,9 @@ int main() {
     */
 
     // 2.1 Concatenate urls
-    // {{1, url}, {2, url}} for multithreading TODO 
+    // Do not need multithreading (stable)
 
-    VPIS indexurl = {};
+    VS indexurl = {};
     for (int i = 0; i < codetype.size(); i++) {
 	std::pair<std::string, std::string> ct = codetype[i];
 	std::string code = ct.first;
@@ -436,7 +436,7 @@ int main() {
 	    url = "";
 	}
 	
-	indexurl.push_back(std::make_pair(i, type+','+url)); 
+	indexurl.push_back(type+','+url); 
     }
 
     // 2.2 Mapping them into a url map
@@ -453,7 +453,7 @@ int main() {
 	VS datafield = {}; // store this data (S/O/B) ans
 
 	// 3.1 Parse this "url", get url and type
-	std::string url = pis.second;
+	std::string url = pis;
 	std::cout << url << std::endl;
 	std::string type = "";
 	for (auto it = url.begin(); it < url.end(); it++) {
@@ -589,4 +589,5 @@ int main() {
 	}
 	testcsv << '\n';
     }
+    testcsv.close();
 }
