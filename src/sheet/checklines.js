@@ -54,7 +54,7 @@ async function gsrun(cl) {
 	return d.join();
     }).join('\n');
 
-    console.log(csv.length());
+    console.log(csv.length);
 
     /*
     fs.writeFile('sheet.csv', csv, (err) => {
