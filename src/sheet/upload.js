@@ -72,4 +72,3 @@ fs.readFile('line.txt', "utf8", (error, data) => {
 
 });
 
-
