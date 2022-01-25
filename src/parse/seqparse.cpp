@@ -368,9 +368,11 @@ std::string Parser::getYahooBlk(std::string shtml) {
     }
 
     std::string blk = shtml.substr(begidx, endidx-begidx);
+    /* Debug only
     std::ofstream out("test.html");
     out << blk;
     out.close();
+    */
     return shtml.substr(begidx, endidx-begidx); // 5114, 3214 chars
 };
 
