@@ -15,7 +15,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 const {google} = require('googleapis');
 const keys = require('../../../Keys/compass.json') // safety reason
 var fs = require('fs')
@@ -42,26 +41,17 @@ async function gsrun(cl) {
     const opt = {
 	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
 	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Prelim Check!C73:D2000',
+	range: 'Prelim Check!C73:D2000', 
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
     let dataArray = data.data.values;
-    console.log(dataArray);
-    console.log(dataArray.length);
+    // console.log(dataArray);
+    let line = dataArray.length + 73; // start index
+    console.log(line);
 
-
-    /*
-    var csv = dataArray.map(function(d){
-	return d.join();
-    }).join('\n');
-    */
-
-
-    /*
-    fs.writeFile('sheet.csv', csv, (err) => {
+    fs.writeFile('line.txt', line, (err) => {
 	console.log(err || "done");
     });
-    */
-}
 
+}
