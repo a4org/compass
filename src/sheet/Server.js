@@ -15,10 +15,7 @@ httpserver.on("request", (req, res) => {
 		res.end();
 	    }
     );
-
-
 })
-
 
 httpserver.on("connection", connection=> {
     console.log("Someone just connected!")
