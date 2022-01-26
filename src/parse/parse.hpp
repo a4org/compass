@@ -33,10 +33,10 @@
 #define BOND  "https://www.bondsupermart.com/main/ws/bond-info/bond-factsheet/"
 #define YAHOO "https://finance.yahoo.com/quote/"
 #define THRLIMIT 16
-#define VVS  std::vector<std::vector<std::string>> 
-#define VPSS std::vector<std::pair<std::string, std::string>>
-#define VPIS std::vector<std::pair<int, std::string>>
-#define UMSV std::unordered_map<std::string, std::vector<std::string>>
+#define VVS  std::vector<std::vector<std::string> > 
+#define VPSS std::vector<std::pair<std::string, std::string> >
+#define VPIS std::vector<std::pair<int, std::string> >
+#define UMSV std::unordered_map<std::string, std::vector<std::string> >
 #define VS std::vector<std::string>
 
 // CurlObj is the class to handle url
@@ -110,6 +110,7 @@ public:
 	return this->getStockBlk(this->phtml);
     }
     */
+
 protected: // can access by subclass
     std::string phtml;
 
@@ -151,7 +152,7 @@ protected: // can access by subclass
 
 // HistParser is the class to deal with the history data html file
 // Which is inherance from Parser class
-class HistParser : private Parser {
+class HistParser : public Parser {
 public:
     HistParser(std::string date) {  // init with date
 	this->Open = {date, "Open"};
@@ -201,6 +202,7 @@ public:
 	this->Volumn.push_back(" ");
 	this->Bid.push_back(" ");
 	this->Ask.push_back(" ");
+	return 0;
     }
 
 

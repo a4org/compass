@@ -21,10 +21,8 @@ int HistParser::hstock(std::string phtml) {
 	push_invalid();
 	return -1;
     }
+    // 1. Get Yahoo Blk
     std::string blk = this->getYahooBlk(phtml);
-
-    // 1. Get block
-    blk = this->getYahooBlk(phtml);
 
     // 2. Get each data
 
@@ -158,7 +156,10 @@ int HistParser::hoption(std::string phtml) {
     // 2.1 Open price
     std::string openkey = "OPEN-value";
     std::pair<int, int> op = this->gparse(blk, openkey);
-    if (op.first == -1) return {};
+    if (op.first == -1) {
+	push_invalid();
+	return -1;
+    };
     O = blk.substr(op.first, op.second-op.first);
 
     // Just for debugging
@@ -208,21 +209,46 @@ int HistParser::hoption(std::string phtml) {
 
 
 int linecsv(std::string cpath, VPSS& codetype) {
-    std::string line;
+    std::string type; // 1
+    std::string code; // 2
+    VS typev = {};
+    VS codev = {};
     try {
 	std::ifstream csvfile(cpath);
+	std::getline(csvfile, type);
+	std::getline(csvfile, code);
+
 	std::string code, type;
-	std::string temp = "";
-	for (char c : line) {
+	std::string tempc = "";
+	std::string tempt = "";
+
+	for (char c : type) {
 	    if (c == ',') {
-		code = temp;
-		temp = "";
-		continue;
+		type = tempt;
+		tempt = "";
+		typev.push_back(type);
 	    }
-	    temp += c;
+	    tempt += c;
 	}
-	type = temp;
-	codetype.push_back(std::make_pair(code, type));
+	typev.push_back(tempt);
+
+	for (char c : code) {
+	    if (c == ',') {
+		code = tempc;
+		tempc = "";
+		codev.push_back(tempc);
+	    }
+	    tempc += c;
+	}
+	codev.push_back(tempc);
+
+	int csize = codev.size();
+	int tsize = typev.size();
+
+	if (csize != tsize) std::cout << "invalid input format" << std::endl;
+	for (int i = 0; i < (csize < tsize) ? csize : tsize; i++) {
+	    codetype.push_back(std::make_pair(codev[i], typev[i]));
+	}
 	csvfile.close();
     } catch (const std::ifstream::failure& e) {
 	std::cout << "Exception opening/reading file" << std::endl;
@@ -238,6 +264,10 @@ int main() {
     // 1. Read csv file from downhist.js (histprice)
     VPSS codetype;
     linecsv("histprice.csv", codetype);
+
+    for (auto p : codetype) {
+	std::cout << p.first << " " << p.second << std::endl;
+    }
 
     // 2. Concatenate urls
     VS indexurl = {};
@@ -307,6 +337,7 @@ int main() {
 
     // 6. Write to file
     std::ofstream histcsv;
+    histcsv.open("histoutput.csv");
 
     VVS histfields = {histparser->getOpen(), histparser->getHigh(),
 		     histparser->getLow(),  histparser->getClose(),
@@ -323,9 +354,7 @@ int main() {
 
     histcsv.close();
 
-
 }
-
 
 
 
