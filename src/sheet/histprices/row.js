@@ -17,7 +17,7 @@
 
 
 const {google} = require('googleapis');
-const keys = require('../../../Keys/compass.json') // safety reason
+const keys = require('../../../../Keys/compass.json') // safety reason
 var fs = require('fs')
 
 const client = new google.auth.JWT(
@@ -51,7 +51,7 @@ async function gsrun(cl) {
     let row = dataArray.length + 8; // start index
     console.log(row);
 
-    fs.writeFile('../globaldata/row.txt', row, (err) => {
+    fs.writeFile('globaldata/row.txt', row, (err) => {
 	console.log(err || "done");
     });
 }

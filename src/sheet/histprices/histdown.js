@@ -27,46 +27,37 @@ const client = new google.auth.JWT(
 
 
 
-fs.readFile('col.txt', "utf8", (error, data) => {
-    if (error) {
-	throw error;
+client.authorize(function(err, tokens){ // call back function
+    if (err) {
+	console.log(err);
+	return;
     }
-    var col = data.toString();   // the col variable
-    col = col.slice(0, -1);
-    client.authorize(function(err, tokens){ // call back function
-	if (err) {
-	    console.log(err);
-	    return;
-	}
-	console.log('Connected');
-	console.log(col);
-	gsrun(client) // download the data
-    });
-
-    async function gsrun(cl) {
-	const gsapi = google.sheets({version:'v4', auth:cl});
-
-	const opt = {
-	    spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
-	    // spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	    range: 'HistPrices!D6:' + col + '7', // I only need that data today
-	};
-
-	let data = await gsapi.spreadsheets.values.get(opt);
-	let dataArray = data.data.values;
-
-	console.log(dataArray);
-
-	var csv = dataArray.map(function(d){
-	    return d.join();
-	}).join('\n');
-
-	// console.log(csv);
-
-	fs.writeFile('../globaldata/histprices.csv', csv, (err) => {
-	    console.log(err || "done");
-	});
-    }
+    console.log('Connected');
+    gsrun(client) // download the data
 });
 
+async function gsrun(cl) {
+    const gsapi = google.sheets({version:'v4', auth:cl});
+
+    const opt = {
+	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
+	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+	range: 'HistPrices!D6:ZZ7', // I only need that data today
+    };
+
+    let data = await gsapi.spreadsheets.values.get(opt);
+    let dataArray = data.data.values;
+
+    console.log(dataArray);
+
+    var csv = dataArray.map(function(d){
+	return d.join();
+    }).join('\n');
+
+    // console.log(csv);
+
+    fs.writeFile('globaldata/histprices.csv', csv, (err) => {
+	console.log(err || "done");
+    });
+}
 

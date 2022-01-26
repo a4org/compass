@@ -80,7 +80,7 @@ async function gsrun(cl) {
     // let line = dataArray.length + 73; // start index
     // console.log(line);
 
-    fs.writeFile('../globaldata/col.txt', col, (err) => {
+    fs.writeFile('globaldata/col.txt', col, (err) => {
 	console.log(err || "done");
     });
 }
