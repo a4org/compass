@@ -14,7 +14,7 @@
 // Test Logic
 
 const {google} = require('googleapis');
-const keys = require('../../../Keys/compass.json') // safety reason
+const keys = require('../../../../Keys/compass.json') // safety reason
 
 var fs = require('fs')
 
@@ -28,7 +28,7 @@ const client = new google.auth.JWT(
 
 var line = 0; // line variable (global)
 
-fs.readFile('line.txt', "utf8", (error, data) => {
+fs.readFile('../globaldata/line.txt', "utf8", (error, data) => {
     if (error) {
 	throw error;
     }
@@ -64,7 +64,7 @@ fs.readFile('line.txt', "utf8", (error, data) => {
 
 	// console.log(csv);
 
-	fs.writeFile('sheet.csv', csv, (err) => {
+	fs.writeFile('../globaldata/sheet.csv', csv, (err) => {
 	    console.log(err || "done");
 	});
     }

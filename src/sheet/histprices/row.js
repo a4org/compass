@@ -3,7 +3,7 @@
 //
 // row.js
 //
-// Identification: src/sheet/row.js
+// Identification: src/sheet/histprices/row.js
 //
 // Usage:
 // Get the total row of today's HistPrices sheet
@@ -51,7 +51,7 @@ async function gsrun(cl) {
     let row = dataArray.length + 8; // start index
     console.log(row);
 
-    fs.writeFile('row.txt', row, (err) => {
+    fs.writeFile('../globaldata/row.txt', row, (err) => {
 	console.log(err || "done");
     });
 }

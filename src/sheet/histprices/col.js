@@ -42,7 +42,7 @@ function letterToColumn(letter)
 // console.log(columnToLetter(40));
 
 const {google} = require('googleapis');
-const keys = require('../../../Keys/compass.json') // safety reason
+const keys = require('../../../../Keys/compass.json') // safety reason
 var fs = require('fs')
 
 const client = new google.auth.JWT(
@@ -80,7 +80,7 @@ async function gsrun(cl) {
     // let line = dataArray.length + 73; // start index
     // console.log(line);
 
-    fs.writeFile('col.txt', col, (err) => {
+    fs.writeFile('../globaldata/col.txt', col, (err) => {
 	console.log(err || "done");
     });
 }

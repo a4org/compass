@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 const {google} = require('googleapis');
-const keys = require('../../../Keys/compass.json') // safety reason
+const keys = require('../../../../Keys/compass.json') // safety reason
 var fs = require('fs')
 
 const client = new google.auth.JWT(
@@ -44,7 +44,7 @@ fs.readFile('line.txt', "utf8", (error, data) => {
 
 	// TODO Define dataArray
 
-	fs.readFile('toutput.csv', "utf8", (error, data) => {
+	fs.readFile('../globaldata/toutput.csv', "utf8", (error, data) => {
 	    if (error) {
 		throw error;
 	    }

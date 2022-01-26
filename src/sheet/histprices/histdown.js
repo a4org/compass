@@ -14,7 +14,7 @@
 // Test Logic
 
 const {google} = require('googleapis');
-const keys = require('../../../Keys/compass.json') // safety reason
+const keys = require('../../../../Keys/compass.json') // safety reason
 
 var fs = require('fs')
 
@@ -63,7 +63,7 @@ fs.readFile('col.txt', "utf8", (error, data) => {
 
 	// console.log(csv);
 
-	fs.writeFile('histprices.csv', csv, (err) => {
+	fs.writeFile('../globaldata/histprices.csv', csv, (err) => {
 	    console.log(err || "done");
 	});
     }
