@@ -28,7 +28,7 @@ const client = new google.auth.JWT(
 
 var line = 0; // line variable (global)
 
-fs.readFile('../globaldata/line.txt', "utf8", (error, data) => {
+fs.readFile('globaldata/line.txt', "utf8", (error, data) => {
     if (error) {
 	throw error;
     }
@@ -64,7 +64,7 @@ fs.readFile('../globaldata/line.txt', "utf8", (error, data) => {
 
 	// console.log(csv);
 
-	fs.writeFile('../globaldata/sheet.csv', csv, (err) => {
+	fs.writeFile('globaldata/sheet.csv', csv, (err) => {
 	    console.log(err || "done");
 	});
     }

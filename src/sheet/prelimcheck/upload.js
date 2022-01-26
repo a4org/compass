@@ -23,7 +23,7 @@ const client = new google.auth.JWT(
 ); // json web token
 
 
-fs.readFile('line.txt', "utf8", (error, data) => {
+fs.readFile('globaldata/line.txt', "utf8", (error, data) => {
     if (error) {
 	throw error;
     }
@@ -44,7 +44,7 @@ fs.readFile('line.txt', "utf8", (error, data) => {
 
 	// TODO Define dataArray
 
-	fs.readFile('../globaldata/toutput.csv', "utf8", (error, data) => {
+	fs.readFile('globaldata/toutput.csv', "utf8", (error, data) => {
 	    if (error) {
 		throw error;
 	    }

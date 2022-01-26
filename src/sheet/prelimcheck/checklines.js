@@ -51,7 +51,7 @@ async function gsrun(cl) {
     let line = dataArray.length + 73; // start index
     console.log(line);
 
-    fs.writeFile('../globaldata/line.txt', line, (err) => {
+    fs.writeFile('globaldata/line.txt', line, (err) => {
 	console.log(err || "done");
     });
 }
