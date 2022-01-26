@@ -39,7 +39,7 @@ int main() {
 
     // 1. Read csv file from download.js (sheet)
     VPSS codetype; // code with its type
-    readcsv("sheet.csv", codetype);
+    readcsv("../globaldata/sheet.csv", codetype);
 
     // 2.1 Concatenate urls
     // Do not need multithreading (stable)
@@ -205,7 +205,7 @@ int main() {
     }
     // 5. Write to file
     std::ofstream testcsv;
-    testcsv.open("toutput.csv");
+    testcsv.open("../globaldata/toutput.csv");
 
     for (VS datafield : datafields) {
 	for (std::string s : datafield) {

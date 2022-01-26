@@ -23,6 +23,3 @@ clear:
 clean:
 	rm -rf ../sheet/parse/histparser
 	rm -rf ../sheet/parse/seqparser
-
-
-
