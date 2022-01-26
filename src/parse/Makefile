@@ -1,8 +1,8 @@
 histparser: seqparse.o histparse.o
-	g++ -std=c++17  histmain.cpp seqparse.o histparse.o -O1 -l curl -o ../sheet/parse/histparser
+	g++ -std=c++17  histmain.cpp seqparse.o histparse.o -O1 -l curl -o ../sheet/histparser
 
 seqparser: seqparse.o
-	g++ -std=c++17 seqmain.cpp seqparse.o -O1 -l curl -o ../sheet/parse/seqparser
+	g++ -std=c++17 seqmain.cpp seqparse.o -O1 -l curl -o ../sheet/seqparser
 
 histparse.o: histprices/histparse.cpp histprices/histparse.hpp
 	g++ -std=c++17 -c histprices/histparse.cpp -O1 -o histparse.o
@@ -21,5 +21,5 @@ clear:
 .PHONY: clean
 # clean all output file
 clean:
-	rm -rf ../sheet/parse/histparser
-	rm -rf ../sheet/parse/seqparser
+	rm -rf ../sheet/histparser
+	rm -rf ../sheet/seqparser

@@ -61,7 +61,7 @@ int linecsv(std::string cpath, VPSS& codetype) {
 int main() {
     // 1. Read csv file from downhist.js (histprices)
     VPSS codetype;
-    linecsv("../globaldata/histprices.csv", codetype);
+    linecsv("globaldata/histprices.csv", codetype);
 
     for (auto p : codetype) {
 	std::cout << p.first << " " << p.second << std::endl;
@@ -134,7 +134,7 @@ int main() {
 
     // 6. Write to file
     std::ofstream histcsv;
-    histcsv.open("../globaldata/histoutput.csv");
+    histcsv.open("globaldata/histoutput.csv");
 
     VVS histfields = {histparser->getOpen(), histparser->getHigh(),
 		     histparser->getLow(),  histparser->getClose(),
