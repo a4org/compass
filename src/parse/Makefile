@@ -1,0 +1,28 @@
+histparser: seqparse.o histparse.o
+	g++ -std=c++17  histmain.cpp seqparse.o histparse.o -O1 -l curl -o ../sheet/parse/histparser
+
+seqparser: seqparse.o
+	g++ -std=c++17 seqmain.cpp seqparse.o -O1 -l curl -o ../sheet/parse/seqparser
+
+histparse.o: histprices/histparse.cpp histprices/histparse.hpp
+	g++ -std=c++17 -c histprices/histparse.cpp -O1 -o histparse.o
+
+seqparse.o: sequencial/seqparse.cpp sequencial/seqparse.hpp
+	g++ -std=c++17 -c sequencial/seqparse.cpp -O1 -o seqparse.o
+
+
+.PHONY: clear
+# clear all .o file
+clear:
+	rm -f histparse.o
+	rm -f seqparse.o
+
+
+.PHONY: clean
+# clean all output file
+clean:
+	rm -rf ../sheet/parse/histparser
+	rm -rf ../sheet/parse/seqparser
+
+
+

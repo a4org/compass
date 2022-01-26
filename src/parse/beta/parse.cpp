@@ -11,6 +11,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "./parse.hpp"
+#include "./seqparse.cpp"
 
 
 std::map<int, VS> thrdatafields; // sorted map for multithreading TODO
