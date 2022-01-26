@@ -1,13 +1,20 @@
 #! /bin/bash
 
-# 1. download today's data
-node download.js
+# 1. PrelimCheck sheet
 
-# 2. parse them
-./parse
+# 1.1 download today's data
+node prelimcheck/download.js
 
-# 3. upload today's data
-node upload.js
+# 1.2 parse them
+./seqparser
 
-# 4. get today's line, which is tomorrow's start index
-node checklines.js
+# 1.3 upload today's data
+node prelimcheck/upload.js
+
+# 1.4 get today's line, which is tomorrow's start index
+node prelimcheck/checklines.js
+
+
+# 2. HistPrices sheet
+
+# 2.1 download today's data
