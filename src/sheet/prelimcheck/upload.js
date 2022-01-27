@@ -3,7 +3,7 @@
 //
 // upload.js
 //
-// Identification: src/sheet/upload.js
+// Identification: src/sheet/prelimcheck/upload.js
 //
 // Last Modified : 2022.1.12 Jiawei Wang
 //
@@ -62,7 +62,7 @@ fs.readFile('globaldata/line.txt', "utf8", (error, data) => {
 	    const inputopt = {
 		spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
 		// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-		range: 'Prelim Check!E' + line,
+		range: 'Prelim Check!V' + line,
 		valueInputOption: 'USER_ENTERED',
 		resource: {values: dataArray}
 	    };

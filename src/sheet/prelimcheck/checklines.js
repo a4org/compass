@@ -3,7 +3,7 @@
 //
 // checklines.js
 //
-// Identification: src/sheet/checklines.js
+// Identification: src/sheet/prelimcheck/checklines.js
 //
 // Usage:
 // Get the total line of today's sheet
@@ -40,15 +40,15 @@ async function gsrun(cl) {
     const gsapi = google.sheets({version:'v4', auth:cl});
 
     const opt = {
-	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
-	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'Prelim Check!C73:D2000', 
+	// spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
+	spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+	range: 'Prelim Check!H5:I2000', 
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
     let dataArray = data.data.values;
     // console.log(dataArray);
-    let line = dataArray.length + 73; // start index
+    let line = dataArray.length + 5; // start index
     console.log(line);
 
     fs.writeFile('globaldata/line.txt', line, (err) => {

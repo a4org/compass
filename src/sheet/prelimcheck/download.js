@@ -3,7 +3,7 @@
 //
 // download.js
 //
-// Identification: src/sheet/download.js
+// Identification: src/sheet/prelimcheck/download.js
 //
 // Last Modified : 2022.1.25 Jiawei Wang 
 //
@@ -48,9 +48,9 @@ fs.readFile('globaldata/line.txt', "utf8", (error, data) => {
 	const gsapi = google.sheets({version:'v4', auth:cl});
 
 	const opt = {
-	    spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
-	    // spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	    range: 'Prelim Check!C' + line + ':D2000', // I only need that data today
+	    // spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
+	    spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+	    range: 'Prelim Check!H' + line + ':I2000', // I only need that data today
 	};
 
 	let data = await gsapi.spreadsheets.values.get(opt);
