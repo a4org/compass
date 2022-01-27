@@ -846,7 +846,7 @@
             methods: {},
             mounted: function() {
                 var e = this;
-                this.axios.get("../sheet/indexpage.xlsx", {
+                this.axios.get("../sheet/idexpage.xlsx", {
                     responseType: "arraybuffer",
                     headers: {
                         "Cache-Control": "no-cache",
