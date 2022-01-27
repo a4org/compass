@@ -60,8 +60,8 @@ fs.readFile('globaldata/line.txt', "utf8", (error, data) => {
 	    console.log(dataArray);
 
 	    const inputopt = {
-		spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
-		// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+		// spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
+		spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
 		range: 'Prelim Check!V' + line,
 		valueInputOption: 'USER_ENTERED',
 		resource: {values: dataArray}
