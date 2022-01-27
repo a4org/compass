@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <title>The Linux Kernel Archives</title>
+        <title>The Compass Trading System</title>
         <meta charset="utf-8" />
-	<link rel="icon" type="image/png" href="./theme/images/logos/favicon.png" />
-        <link rel="stylesheet" href="main.css" type="text/css" />
-                <link href="https://www.kernel.org/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="The Linux Kernel Archives Atom Feed" />
-                
-        <link href="https://www.kernel.org/feeds/kdist.xml" type="application/atom+xml" rel="alternate" title="Latest Linux Kernel Releases" />
+	<link rel="icon" type="image/png" href="./images/favicon.ico" />
+	<meta name="author" content="Angold Wang">
+	<meta content="The Compass Trading System for HKMU B385 Course">
+        <link rel="stylesheet" href="css/main.css" type="text/css" />
+
+	<!-- Bootstrap core CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
 
         <!--[if IE]>
                 <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -21,24 +24,18 @@
 
 </head>
 
+
+
+
+
 <body id="index" class="home"> <header id="banner" class="body">
 	        <div id="tux-gear"></div>
-                <h1><a href="./">The Linux Kernel Archives </a></h1>
+                <h1><a href="./">The Compass Trading System </a></h1>
                 <nav><ul>
 
     <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge">
 
-	<meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=favicon.ico>
-
-	<!--	<link href=css/app.41227b7e.css rel=preload as=style> 
-
-	<link href=css/chunk-vendors.a7f9a834.css rel=preload as=style> -->
-
-	<link href=js/app.088aaee6.js rel=preload as=script>
-
-	<link href=js/chunk-vendors.0651a1b3.js rel=preload as=script><link href=css/chunk-vendors.a7f9a834.css rel=stylesheet>
-
-	<link href=css/app.41227b7e.css rel=stylesheet>
+	<meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=images/favicon.ico>
 
     </head>
 
@@ -53,16 +50,41 @@
         </header><!-- /#banner -->
                 
     <aside id="featured" class="body">
+
     <article>
-	<noscript><strong>We're sorry but Webpack App doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
-
-	<div id=app></div>
-
-	<script src=js/chunk-vendors.0651a1b3.js></script>
-
-	<script src=js/app.088aaee6.js></script>
-
+                <div id="table-container"></div>
     </article>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery.csv.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="js/csv_to_html_table.js"></script>
+
+    <script>
+        function format_link(link) {
+            if (link)
+                return "<a href='" + link + "' target='_blank'>" + link + "</a>";
+            else return "";
+        }
+
+        CsvToHtmlTable.init({
+            csv_path: "data/colon_separator_example.csv",
+            element: "table-container",
+            allow_download: true,
+            csv_options: {
+                separator: ",",
+                delimiter: '"'
+            },
+            datatables_options: {
+                paging: false
+            },
+            custom_formatting: [
+                [4, format_link]
+            ]
+        });
+    </script>
 </aside>
         <section id="extras" class="body">
                         <div class="blogroll">
