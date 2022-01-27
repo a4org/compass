@@ -42,7 +42,7 @@ function letterToColumn(letter)
 // console.log(columnToLetter(40));
 
 const {google} = require('googleapis');
-const keys = require('../../../../Keys/compass.json') // safety reason
+const keys = require('/home/angold/Desktop/Keys/compass.json') // safety reason
 var fs = require('fs')
 
 const client = new google.auth.JWT(
