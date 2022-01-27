@@ -42,13 +42,13 @@ async function gsrun(cl) {
     const opt = {
 	spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
 	// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'HistPrices!D8:E2000', 
+	range: 'HistPrices!C13:D2000', 
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
     let dataArray = data.data.values;
     // console.log(dataArray);
-    let row = dataArray.length + 8; // start index
+    let row = dataArray.length + 13; // start index
     console.log(row);
 
     fs.writeFile('globaldata/row.txt', row, (err) => {

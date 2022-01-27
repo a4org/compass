@@ -1,15 +1,15 @@
 //===----------------------------------------------------------------------===//
 //                         compass
 //
-// histlines.js
+// col.js
 //
-// Identification: src/sheet/histlines.js
+// Identification: src/sheet/histprices/col.js
 //
 // Usage:
 // Get the total columns of today's sheet
 // which is the index of tomorrow's start point
 //
-// Last Modified : 2022.1.26 Jiawei Wang 
+// Last Modified : 2022.1.27 Jiawei Wang 
 //
 // Copyright (c) 2022 Angold-4
 //

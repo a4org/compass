@@ -59,9 +59,9 @@ fs.readFile('globaldata/row.txt', "utf8", (error, data) => {
 	    console.log(dataArray);
 
 	    const inputopt = {
-		spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
-		// spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-		range: 'HistPrices!B' + row,
+		// spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // test only
+		spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
+		range: 'HistPrices!A' + row,
 		valueInputOption: 'USER_ENTERED',
 		resource: {values: dataArray}
 	    };
