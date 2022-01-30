@@ -42,7 +42,7 @@ async function gsrun(cl) {
     const opt = {
 	// spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
 	spreadsheetId: '1mvA960mm3QaFyRdwkfIRxhE1UQJl45QEUTnDVxtxiIE',
-	range: 'HistPrices!C7:C8', // I only need that data today
+	range: 'HistPrices!D7:ZZ8', // I only need that data today
     };
 
     let data = await gsapi.spreadsheets.values.get(opt);
