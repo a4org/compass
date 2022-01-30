@@ -85,13 +85,13 @@ private:
      * just push invalid
      */
     void push_invalid() {
-	this->Open.push_back("(invalid)");
-	this->High.push_back("(invalid)");
-	this->Low.push_back("(invalid)");
-	this->Close.push_back("(invalid)");
-	this->Volumn.push_back("(invalid)");
-	this->Bid.push_back("(invalid)");
-	this->Ask.push_back("(invalid)");
+	this->Open.push_back(" ");
+	this->High.push_back(" ");
+	this->Low.push_back(" ");
+	this->Close.push_back(" ");
+	this->Volumn.push_back(" ");
+	this->Bid.push_back(" ");
+	this->Ask.push_back(" ");
     }
 
     inline void rcomma(std::string &value) {

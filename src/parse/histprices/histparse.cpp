@@ -92,8 +92,8 @@ int HistParser::hstock(std::string phtml) {
     this->Low.push_back(L);
     this->Close.push_back(C);
     this->Volumn.push_back(Volume);
-    this->Bid.push_back("(blank)");
-    this->Ask.push_back("(blank)");
+    this->Bid.push_back(" ");
+    this->Ask.push_back(" ");
     return 0; // normal
 };
 
@@ -129,11 +129,11 @@ int HistParser::hbond(std::string phtml) {
     std::cout << "Ask: " << Ask << std::endl;
 
     rcomma(Bid); rcomma(Ask);
-    this->Open.push_back("(blank)");
-    this->Close.push_back("(blank)");
-    this->High.push_back("(blank)");
-    this->Low.push_back("(blank)");
-    this->Volumn.push_back("(blank)");
+    this->Open.push_back(" ");
+    this->Close.push_back(" ");
+    this->High.push_back(" ");
+    this->Low.push_back(" ");
+    this->Volumn.push_back(" ");
     this->Bid.push_back(Bid);
     this->Ask.push_back(Ask);
 
@@ -141,13 +141,13 @@ int HistParser::hbond(std::string phtml) {
 }
 
 
-// O, H, L, C
+// O, H, L, C, Bid, Ask
 int HistParser::hoption(std::string phtml) {
     if (phtml.size() < 100) {
 	push_invalid();
 	return -1;
     }
-    std::string O, H, L, C;
+    std::string O, H, L, C, Bid, Ask;
 
     // 1. Get block
     std::string blk = this->getYahooBlk(phtml);
@@ -194,16 +194,34 @@ int HistParser::hoption(std::string phtml) {
     // Just for debugging
     std::cout << "Close: " << C << std::endl;
 
-    rcomma(O); rcomma(H); rcomma(L); rcomma(C);
+    // 2.4 Bid price
+    std::string bidkey = "BID-value";
+    std::pair<int, int> bp = this->gparse(blk, bidkey);
+
+    Bid = blk.substr(bp.first, bp.second - bp.first);
+
+    // Just for debugging
+    std::cout << "Bid: " << Bid << std::endl;
+
+    // 2.5 Ask price
+    std::string askkey = "ASK-value";
+    std::pair<int, int> ap = this->gparse(blk, askkey);
+
+    Ask = blk.substr(ap.first, ap.second - ap.first);
+
+    // Just for debugging
+    std::cout << "Ask: " << Ask << std::endl;
+
+    rcomma(O); rcomma(H); rcomma(L); rcomma(C); rcomma(Bid); rcomma(Ask);
 
     // 3. Write to vector
     this->Open.push_back(O);
     this->High.push_back(H);
     this->Low.push_back(L);
     this->Close.push_back(C);
-    this->Volumn.push_back("(blank)");
-    this->Bid.push_back("(blank)");
-    this->Ask.push_back("(blank)");
+    this->Volumn.push_back(" ");
+    this->Bid.push_back(Bid);
+    this->Ask.push_back(Ask);
 
     return 0; // normal
 }
