@@ -4,7 +4,6 @@ const { exec } = require('child_process');
 const httpserver = http.createServer();
 
 httpserver.on("request", (req, res) => {
-    console.log(req.url);
     if (req.url != '/favicon.ico') {
 	var compass = exec('./histbutton.sh',
 		(error, stdout, stderr) => {
