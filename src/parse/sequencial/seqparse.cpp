@@ -203,10 +203,12 @@ VS Parser::stock() {
 
 
     // 2.3 Close price
-    std::string closekey = "PREV_CLOSE-value";
-    std::pair<int, int> cp = this->gparse(blk, closekey);
+    // std::string closekey = "PREV_CLOSE-value";
+    // std::pair<int, int> cp = this->gparse(blk, closekey);
 
-    C = blk.substr(cp.first, cp.second - cp.first);
+    // C = blk.substr(cp.first, cp.second - cp.first);
+    
+    this->getCloseP(this->phtml, C);
 
     // Just for debugging
     std::cout << "Close: " << C << std::endl;
@@ -312,10 +314,12 @@ VS Parser::option() {
 
 
     // 2.3 Close price
-    std::string closekey = "PREV_CLOSE-value";
-    std::pair<int, int> cp = this->gparse(blk, closekey);
+    // std::string closekey = "PREV_CLOSE-value";
+    // std::pair<int, int> cp = this->gparse(blk, closekey);
 
-    C = blk.substr(cp.first, cp.second - cp.first);
+    // C = blk.substr(cp.first, cp.second - cp.first);
+    
+    this->getCloseP(this->phtml, C);
 
     // Just for debugging
     std::cout << "Close: " << C << std::endl;
@@ -365,10 +369,22 @@ std::string Parser::getYahooBlk(std::string shtml) {
     }
 
     std::string blk = shtml.substr(begidx, endidx-begidx);
-    /* Debug only
     std::ofstream out("test.html");
     out << blk;
     out.close();
-    */
     return shtml.substr(begidx, endidx-begidx); // 5114, 3214 chars
 };
+
+
+void Parser::getCloseP(std::string html, std::string& Close) {
+    std::string ckey = "Fz(36px)"; // close price key
+
+    int start = html.find(ckey);
+
+    int closestart = html.find("value=\"", start);
+    int closeend = html.find("\"", closestart + 7);
+
+    closestart += 7;
+
+    Close = html.substr(closestart, closeend - closestart);
+}

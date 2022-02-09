@@ -59,10 +59,12 @@ int HistParser::hstock(std::string phtml) {
 
 
     // 2.3 Close price
-    std::string closekey = "PREV_CLOSE-value";
-    std::pair<int, int> cp = this->gparse(blk, closekey);
+    // std::string closekey = "PREV_CLOSE-value";
+    // std::pair<int, int> cp = this->gparse(blk, closekey);
 
-    C = blk.substr(cp.first, cp.second - cp.first);
+    // C = blk.substr(cp.first, cp.second - cp.first);
+
+    this->getCloseP(phtml, C);
 
     // Just for debugging
     std::cout << "Close: " << C << std::endl;
@@ -186,13 +188,17 @@ int HistParser::hoption(std::string phtml) {
 
 
     // 2.3 Close price
-    std::string closekey = "PREV_CLOSE-value";
-    std::pair<int, int> cp = this->gparse(blk, closekey);
+    // std::string closekey = "PREV_CLOSE-value";
+    // std::pair<int, int> cp = this->gparse(blk, closekey);
 
-    C = blk.substr(cp.first, cp.second - cp.first);
+    // C = blk.substr(cp.first, cp.second - cp.first);
+
+
+    this->getCloseP(phtml, C);
 
     // Just for debugging
     std::cout << "Close: " << C << std::endl;
+
 
     // 2.4 Bid price
     std::string bidkey = "BID-value";

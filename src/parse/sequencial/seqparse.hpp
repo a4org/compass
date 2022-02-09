@@ -132,7 +132,7 @@ protected:  // can be inherance
     std::string getOptionBlk(std::string shtml);
 
     /**
-     * Parser::gparse
+     * Parser::gparse()
      *
      * Generitic parse function for Yahoo finance
      * return start and end point of the specific key
@@ -140,10 +140,18 @@ protected:  // can be inherance
     std::pair<int, int> gparse(std::string sblk, std::string key);
 
     /**
-     * Parser::bparse
+     * Parser::bparse()
      *
      * Generitic parse function for bond
      * return start and end point of the specific key
      */
     std::pair<int, int> bparse(std::string html, std::string key);
+
+    /**
+     * Parser::getCloseP()
+     *
+     * Get the Close price which is Fz(36px) as key in yahoo finance
+     */
+    void getCloseP(std::string html, std::string& Close);
+
 };
