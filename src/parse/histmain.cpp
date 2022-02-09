@@ -88,6 +88,7 @@ int main() {
 
     // 3. Get time
     std::time_t t = std::time(0);
+    t -= 86400;
     std::tm* now = std::localtime(&t);
     std::string date = std::to_string((now->tm_year + 1900));
     date += '-';
