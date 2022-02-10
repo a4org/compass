@@ -1,5 +1,10 @@
 #! /bin/bash
 
+
+# 0. change dir
+
+cd /var/www/compass/src/sheet
+
 # 1. PrelimCheck sheet
 
 # 1.1 download today's data
