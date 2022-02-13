@@ -37,7 +37,7 @@ client.authorize(function(err, tokens){ // call back function
 });
 
 async function gsrun(cl) {
-    const gsapi = google.sheets({version:'v4', auth:l});
+    const gsapi = google.sheets({version:'v4', auth:cl});
 
     const opt = {
 	// spreadsheetId: '11nAOR-7XIAjnhYY-1QuAzKk4xhnAPtq4QoohH6ptXNQ', // Test only
