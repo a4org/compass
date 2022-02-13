@@ -28,7 +28,7 @@ const client = new google.auth.JWT(
 
 var line = 0; // line variable (global)
 
-fs.readFile('globaldata/formline.txt', "utf8", (error, data) => {
+fs.readFile('globaldata/currline.txt', "utf8", (error, data) => {
     if (error) {
 	throw error;
     }
