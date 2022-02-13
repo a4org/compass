@@ -36,7 +36,7 @@ fs.readFile('globaldata/currline.txt', "utf8", (error, data) => {
 	}
 	console.log('Connected');
 	console.log(line);
-	gsrun(lient) // download the data
+	gsrun(client) // download the data
     });
     
     async function gsrun(cl) {
