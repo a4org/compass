@@ -48,7 +48,7 @@ async function gsrun(cl) {
     let data = await gsapi.spreadsheets.values.get(opt);
     let dataArray = data.data.values;
     // console.log(dataArray);
-    let line = dataArray.length + 1; // start index
+    let line = dataArray.length + 2; // start index
     console.log(line);
 
     fs.writeFile('globaldata/currline.txt', line, (err) => {
