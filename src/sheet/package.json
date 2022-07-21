@@ -9,6 +9,7 @@
   "author": "Angold",
   "license": "ISC",
   "dependencies": {
-    "googleapis": "^39.2.0"
+    "googleapis": "^39.2.0",
+    "xhr2": "^0.2.1"
   }
 }

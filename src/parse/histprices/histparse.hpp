@@ -4,7 +4,7 @@
 
 // HistParser is the class to deal with the history data html file
 // Which is inherance from Parser class
-class HistParser : private Parser{
+class HistParser : private Parser {
 public:
     HistParser(std::string date) {  // init with date
 	this->Open = {date, "Open"};

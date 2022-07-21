@@ -1,5 +1,7 @@
 # 2. HistPrices sheet
 
+node histprices/row.js
+
 # 2.1 download today's data
 node histprices/histdown.js
 
